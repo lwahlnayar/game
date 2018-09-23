@@ -33,7 +33,7 @@ function create() {
     this.add.image(320, 180, "sky");
     platforms = this.physics.add.staticGroup();
     player = this.physics.add.sprite(100, 150, "dude");
-    player.body.setGravityY(800);
+    player.body.setGravityY(300);
     this.physics.add.collider(player, platforms);
 
     platforms
@@ -42,7 +42,7 @@ function create() {
         .refreshBody();
 
     player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
+    // player.setCollideWorldBounds(false);
 
     this.anims.create({
         key: "left",
@@ -69,4 +69,44 @@ function create() {
     // platforms.create(325, 110, "ground");
 }
 
-function update() {}
+var downFlag = false;
+var jump = 0;
+
+function update() {
+    cursors = this.input.keyboard.createCursorKeys();
+    var onGround = player.body.touching.down;
+
+    if (cursors.left.isDown) {
+        player.setVelocityX(-160);
+
+        player.anims.play("left", true);
+    } else if (cursors.right.isDown) {
+        player.setVelocityX(160);
+
+        player.anims.play("right", true);
+    } else {
+        player.setVelocityX(0);
+
+        player.anims.play("turn");
+    }
+
+    if (onGround) {
+        jump = 2;
+        // console.log(jump);
+    }
+
+    if (cursors.up.isDown) {
+        downFlag = true;
+    } else {
+        if (downFlag) {
+            downFlag = false;
+            if (jump == 2) {
+                jump--;
+                player.setVelocityY(-400);
+            } else if (jump == 1) {
+                jump--;
+                player.setVelocityY(-300);
+            }
+        }
+    }
+}
