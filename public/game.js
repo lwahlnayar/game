@@ -102,8 +102,8 @@ function create() {
     this.anims.create({
         key: "leftJump",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 7,
-            end: 7
+            start: 27,
+            end: 27
         }),
         frameRate: 10,
         repeat: -1
@@ -122,7 +122,7 @@ function create() {
         key: "rightRun",
         frames: this.anims.generateFrameNumbers("player1", {
             start: 3,
-            end: 7
+            end: 8
         }),
         frameRate: 10,
         repeat: -1
@@ -150,8 +150,8 @@ function create() {
     this.anims.create({
         key: "rightJump",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 29,
-            end: 29
+            start: 8,
+            end: 8
         }),
         frameRate: 10,
         repeat: -1
@@ -205,47 +205,57 @@ function update() {
     cursors = this.input.keyboard.createCursorKeys();
 
     //CHARACTER MOVEMENTS
+
     function characterMove(player) {
         if (cursors.left.isDown) {
-            player.setVelocityX(-200);
-            player.anims.play("leftRun", true);
-        } else if (player.body.touching.none) {
-            // console.log("left chicken flying");
-            // console.log(player.body.velocity.x);
-            player.anims.play("leftJump", true);
+            if (player.body.touching.down) {
+                player.setVelocityX(-200);
+                player.anims.play("leftRun", true);
+            } else {
+                player.setVelocityX(-200);
+                player.anims.play("leftJump", true);
+            }
         } else if (cursors.right.isDown) {
-            player.setVelocityX(200);
-            player.anims.play("rightRun", true);
-        } else if (player.body.touching.none) {
-            player.anims.play("rightJump", true);
+            if (player.body.touching.down) {
+                player.setVelocityX(200);
+                player.anims.play("rightRun", true);
+            } else {
+                player.setVelocityX(200);
+                player.anims.play("rightJump", true);
+            }
         } else {
             player.setVelocityX(0);
             player.anims.play("neutral");
         }
     }
-    characterMove(player1);
-    //CLOSE CHARACTER MOVEMENTS
-
-    // DOUBLE JUMP
-    // if (onGroundP1) {
-    //     player1.setData({ jump: 2 });
-    //     player1.setGravityY(300);
-    // }
-    // if (cursors.up.isDown) {
-    //     player1.setData({ downFlag: true });
-    // } else {
-    //     if (player1.data.list.downFlag) {
-    //         player1.setData({ downFlag: false });
-    //         if (player1.data.list.jump == 2) {
-    //             player1.setData({ jump: 1 });
-    //             player1.setVelocityY(-400);
-    //         } else if (player1.data.list.jump == 1) {
-    //             player1.setData({ jump: 0 });
-    //             player1.setVelocityY(-300);
+    // function characterMove(player) {
+    //     if (cursors.left.isDown) {
+    //         if (player.body.touching.down) {
+    //             player.setVelocityX(-200);
+    //             player.anims.play("leftRun", true);
+    //         } else {
+    //             player.setVelocityX(-200);
+    //             player.anims.play("leftJump", true);
     //         }
+    //     } else if (player.body.touching.none && player.body.velocity.x < 0) {
+    //         player.anims.play("leftJump", true);
+    //     } else if (cursors.right.isDown) {
+    //         if (player.body.touching.down) {
+    //             player.setVelocityX(200);
+    //             player.anims.play("rightRun", true);
+    //         } else {
+    //             player.setVelocityX(200);
+    //             player.anims.play("rightJump", true);
+    //         }
+    //     } else if (player.body.touching.none && player.body.velocity.x > 0) {
+    //         player.anims.play("rightJump", true);
+    //     } else {
+    //         player.setVelocityX(0);
+    //         player.anims.play("neutral");
     //     }
     // }
-    // CLOSE DOUBLE JUMP
+    characterMove(player1);
+    //CLOSE CHARACTER MOVEMENTS
 
     function resetPlayerPosition(player) {
         player.x = 100; //randomize later
