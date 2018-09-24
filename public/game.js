@@ -51,7 +51,13 @@ function create() {
     //ADD PLAYERS
     player1 = this.physics.add.sprite(100, 150, "player1");
     player1.setScale(0.5, 0.5);
-    player1.setData({ alive: true, lives: 5, jump: 0, downFlag: false });
+    player1.setData({
+        alive: true,
+        lives: 5,
+        jump: 0,
+        movedLeft: false,
+        movedRight: false
+    });
     player1.body.setGravityY(300);
     //CLOSE ADD PLAYERS
     this.physics.add.collider(player1, platforms);
@@ -65,9 +71,15 @@ function create() {
     // player1.setCollideWorldBounds(false);
 
     this.anims.create({
-        key: "neutral",
+        key: "neutralRight",
         frames: [{ key: "player1", frame: 0 }],
-        frameRate: 20
+        frameRate: 18
+    });
+
+    this.anims.create({
+        key: "neutralLeft",
+        frames: [{ key: "player1", frame: 14 }],
+        frameRate: 18
     });
 
     this.anims.create({
@@ -215,6 +227,8 @@ function update() {
                 player.setVelocityX(-200);
                 player.anims.play("leftJump", true);
             }
+            player.setData({ movedRight: false });
+            player.setData({ movedLeft: true });
         } else if (cursors.right.isDown) {
             if (player.body.touching.down) {
                 player.setVelocityX(200);
@@ -223,37 +237,17 @@ function update() {
                 player.setVelocityX(200);
                 player.anims.play("rightJump", true);
             }
+            player.setData({ movedLeft: false });
+            player.setData({ movedRight: true });
         } else {
             player.setVelocityX(0);
-            player.anims.play("neutral");
+            if (player.data.list.movedRight) {
+                player.anims.play("neutralRight");
+            } else {
+                player.anims.play("neutralLeft");
+            }
         }
     }
-    // function characterMove(player) {
-    //     if (cursors.left.isDown) {
-    //         if (player.body.touching.down) {
-    //             player.setVelocityX(-200);
-    //             player.anims.play("leftRun", true);
-    //         } else {
-    //             player.setVelocityX(-200);
-    //             player.anims.play("leftJump", true);
-    //         }
-    //     } else if (player.body.touching.none && player.body.velocity.x < 0) {
-    //         player.anims.play("leftJump", true);
-    //     } else if (cursors.right.isDown) {
-    //         if (player.body.touching.down) {
-    //             player.setVelocityX(200);
-    //             player.anims.play("rightRun", true);
-    //         } else {
-    //             player.setVelocityX(200);
-    //             player.anims.play("rightJump", true);
-    //         }
-    //     } else if (player.body.touching.none && player.body.velocity.x > 0) {
-    //         player.anims.play("rightJump", true);
-    //     } else {
-    //         player.setVelocityX(0);
-    //         player.anims.play("neutral");
-    //     }
-    // }
     characterMove(player1);
     //CLOSE CHARACTER MOVEMENTS
 
