@@ -23,8 +23,8 @@ function preload() {
     this.load.image("sky", "assets/sky2.jpg");
     this.load.image("ground", "assets/platform.png");
     this.load.spritesheet("player1", "assets/player1.png", {
-        frameWidth: 80,
-        frameHeight: 90
+        frameWidth: 79.875,
+        frameHeight: 89.75
     });
 }
 
@@ -78,15 +78,15 @@ function create() {
 
     this.anims.create({
         key: "neutralLeft",
-        frames: [{ key: "player1", frame: 14 }],
+        frames: [{ key: "player1", frame: 16 }],
         frameRate: 18
     });
 
     this.anims.create({
         key: "leftRun",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 14,
-            end: 18
+            start: 16,
+            end: 20
         }),
         frameRate: 10,
         repeat: -1
@@ -114,8 +114,17 @@ function create() {
     this.anims.create({
         key: "leftJump",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 27,
-            end: 27
+            start: 31,
+            end: 31
+        }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "leftJumpB",
+        frames: this.anims.generateFrameNumbers("player1", {
+            start: 30,
+            end: 30
         }),
         frameRate: 10,
         repeat: -1
@@ -134,7 +143,7 @@ function create() {
         key: "rightRun",
         frames: this.anims.generateFrameNumbers("player1", {
             start: 3,
-            end: 8
+            end: 7
         }),
         frameRate: 10,
         repeat: -1
@@ -164,6 +173,15 @@ function create() {
         frames: this.anims.generateFrameNumbers("player1", {
             start: 8,
             end: 8
+        }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "rightJumpB",
+        frames: this.anims.generateFrameNumbers("player1", {
+            start: 9,
+            end: 9
         }),
         frameRate: 10,
         repeat: -1
@@ -242,9 +260,17 @@ function update() {
         } else {
             player.setVelocityX(0);
             if (player.data.list.movedRight) {
-                player.anims.play("neutralRight");
+                if (!player.body.touching.down) {
+                    player.anims.play("rightJumpB");
+                } else {
+                    player.anims.play("neutralRight");
+                }
             } else {
-                player.anims.play("neutralLeft");
+                if (!player.body.touching.down) {
+                    player.anims.play("leftJumpB");
+                } else {
+                    player.anims.play("neutralLeft");
+                }
             }
         }
     }
