@@ -23,14 +23,15 @@ function preload() {
     this.load.image("sky", "assets/sky2.jpg");
     this.load.image("ground", "assets/platform.png");
     this.load.spritesheet("player1", "assets/player1.png", {
-        frameWidth: 80,
-        frameHeight: 90
+        frameWidth: 79.875,
+        frameHeight: 89.75
     });
 }
 
 function create() {
     this.socket = io(); //SOCKET ACTIVATED
     this.add.image(320, 180, "sky");
+
     scoreTextP1 = this.add.text(40, 16, "P1: 5", {
         fontSize: "22px",
         fill: "#000"
@@ -51,7 +52,13 @@ function create() {
     //ADD PLAYERS
     player1 = this.physics.add.sprite(100, 150, "player1");
     player1.setScale(0.5, 0.5);
-    player1.setData({ alive: true, lives: 5, jump: 0, downFlag: false });
+    player1.setData({
+        alive: true,
+        lives: 5,
+        jump: 0,
+        movedLeft: false,
+        movedRight: false
+    });
     player1.body.setGravityY(300);
     //CLOSE ADD PLAYERS
     this.physics.add.collider(player1, platforms);
@@ -65,16 +72,22 @@ function create() {
     // player1.setCollideWorldBounds(false);
 
     this.anims.create({
-        key: "neutral",
+        key: "neutralRight",
         frames: [{ key: "player1", frame: 0 }],
-        frameRate: 20
+        frameRate: 18
+    });
+
+    this.anims.create({
+        key: "neutralLeft",
+        frames: [{ key: "player1", frame: 16 }],
+        frameRate: 18
     });
 
     this.anims.create({
         key: "leftRun",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 14,
-            end: 18
+            start: 16,
+            end: 20
         }),
         frameRate: 10,
         repeat: -1
@@ -102,8 +115,17 @@ function create() {
     this.anims.create({
         key: "leftJump",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 7,
-            end: 7
+            start: 31,
+            end: 31
+        }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "leftJumpB",
+        frames: this.anims.generateFrameNumbers("player1", {
+            start: 30,
+            end: 30
         }),
         frameRate: 10,
         repeat: -1
@@ -150,8 +172,17 @@ function create() {
     this.anims.create({
         key: "rightJump",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 29,
-            end: 29
+            start: 8,
+            end: 8
+        }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "rightJumpB",
+        frames: this.anims.generateFrameNumbers("player1", {
+            start: 9,
+            end: 9
         }),
         frameRate: 10,
         repeat: -1
@@ -205,47 +236,47 @@ function update() {
     cursors = this.input.keyboard.createCursorKeys();
 
     //CHARACTER MOVEMENTS
+
     function characterMove(player) {
         if (cursors.left.isDown) {
-            player.setVelocityX(-200);
-            player.anims.play("leftRun", true);
-        } else if (player.body.touching.none) {
-            // console.log("left chicken flying");
-            // console.log(player.body.velocity.x);
-            player.anims.play("leftJump", true);
+            if (player.body.touching.down) {
+                player.setVelocityX(-200);
+                player.anims.play("leftRun", true);
+            } else {
+                player.setVelocityX(-200);
+                player.anims.play("leftJump", true);
+            }
+            player.setData({ movedRight: false });
+            player.setData({ movedLeft: true });
         } else if (cursors.right.isDown) {
-            player.setVelocityX(200);
-            player.anims.play("rightRun", true);
-        } else if (player.body.touching.none) {
-            player.anims.play("rightJump", true);
+            if (player.body.touching.down) {
+                player.setVelocityX(200);
+                player.anims.play("rightRun", true);
+            } else {
+                player.setVelocityX(200);
+                player.anims.play("rightJump", true);
+            }
+            player.setData({ movedLeft: false });
+            player.setData({ movedRight: true });
         } else {
             player.setVelocityX(0);
-            player.anims.play("neutral");
+            if (player.data.list.movedRight) {
+                if (!player.body.touching.down) {
+                    player.anims.play("rightJumpB");
+                } else {
+                    player.anims.play("neutralRight");
+                }
+            } else {
+                if (!player.body.touching.down) {
+                    player.anims.play("leftJumpB");
+                } else {
+                    player.anims.play("neutralLeft");
+                }
+            }
         }
     }
     characterMove(player1);
     //CLOSE CHARACTER MOVEMENTS
-
-    // DOUBLE JUMP
-    // if (onGroundP1) {
-    //     player1.setData({ jump: 2 });
-    //     player1.setGravityY(300);
-    // }
-    // if (cursors.up.isDown) {
-    //     player1.setData({ downFlag: true });
-    // } else {
-    //     if (player1.data.list.downFlag) {
-    //         player1.setData({ downFlag: false });
-    //         if (player1.data.list.jump == 2) {
-    //             player1.setData({ jump: 1 });
-    //             player1.setVelocityY(-400);
-    //         } else if (player1.data.list.jump == 1) {
-    //             player1.setData({ jump: 0 });
-    //             player1.setVelocityY(-300);
-    //         }
-    //     }
-    // }
-    // CLOSE DOUBLE JUMP
 
     function resetPlayerPosition(player) {
         player.x = 100; //randomize later
