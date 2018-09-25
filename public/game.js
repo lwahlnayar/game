@@ -31,6 +31,7 @@ function preload() {
 function create() {
     this.socket = io(); //SOCKET ACTIVATED
     this.add.image(320, 180, "sky");
+
     scoreTextP1 = this.add.text(40, 16, "P1: 5", {
         fontSize: "22px",
         fill: "#000"
