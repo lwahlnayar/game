@@ -30,6 +30,14 @@ function preload() {
 
 function create() {
     this.socket = io(); //SOCKET ACTIVATED
+    this.socket.on("currentPlayers", function(players) {
+        Object.keys(players).forEach(function(id) {
+            if (players[id].playerId === self.socket.id) {
+                addPlayer(self, players[id]);
+            }
+        });
+    });
+
     this.add.image(320, 180, "sky");
 
     scoreTextP1 = this.add.text(40, 16, "P1: 5", {
