@@ -108,7 +108,7 @@ function create() {
         key: "leftRun",
         frames: this.anims.generateFrameNumbers("player1", {
             start: 16,
-            end: 20
+            end: 19
         }),
         frameRate: 10,
         repeat: -1
@@ -117,8 +117,8 @@ function create() {
     this.anims.create({
         key: "leftPunch",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 0,
-            end: 3
+            start: 20,
+            end: 22
         }),
         frameRate: 10,
         repeat: -1
@@ -127,8 +127,8 @@ function create() {
     this.anims.create({
         key: "leftKick",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 10,
-            end: 13
+            start: 26,
+            end: 28
         }),
         frameRate: 10,
         repeat: -1
@@ -136,8 +136,8 @@ function create() {
     this.anims.create({
         key: "leftJump",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 31,
-            end: 31
+            start: 30,
+            end: 30
         }),
         frameRate: 10,
         repeat: -1
@@ -154,8 +154,8 @@ function create() {
     this.anims.create({
         key: "leftHurt",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 13,
-            end: 15
+            start: 24,
+            end: 25
         }),
         frameRate: 10,
         repeat: -1
@@ -165,7 +165,7 @@ function create() {
         key: "rightRun",
         frames: this.anims.generateFrameNumbers("player1", {
             start: 3,
-            end: 7
+            end: 6
         }),
         frameRate: 10,
         repeat: -1
@@ -174,8 +174,8 @@ function create() {
     this.anims.create({
         key: "rightPunch",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 20,
-            end: 23
+            start: 0,
+            end: 2
         }),
         frameRate: 10,
         repeat: -1
@@ -184,8 +184,8 @@ function create() {
     this.anims.create({
         key: "rightKick",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 24,
-            end: 26
+            start: 10,
+            end: 12
         }),
         frameRate: 10,
         repeat: -1
@@ -202,8 +202,8 @@ function create() {
     this.anims.create({
         key: "rightJumpB",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 9,
-            end: 9
+            start: 8,
+            end: 8
         }),
         frameRate: 10,
         repeat: -1
@@ -211,12 +211,13 @@ function create() {
     this.anims.create({
         key: "rightHurt",
         frames: this.anims.generateFrameNumbers("player1", {
-            start: 24,
-            end: 26
+            start: 13,
+            end: 14
         }),
         frameRate: 10,
         repeat: -1
     });
+
     // DOUBLE JUMP
     function jumpListener(player) {
         if (player.body.touching.down) {
@@ -244,9 +245,34 @@ function create() {
         );
     } //CLOSE DOUBLE JUMP
 
+    //PUNCH FUNCTION
+    function punchListener(player) {
+        self.input.keyboard.on("keydown_A", function(event) {
+            if (player.data.list.movedRight) {
+                player.setData({ actionRight: true, actionLeft: false });
+            } else if (player.data.list.movedLeft) {
+                player.setData({ actionRight: false, actionLeft: true });
+            }
+        });
+    } //CLOSE PUNCH FUNCTION
+
+    //KICK function
+
+    function kickListener(player) {
+        self.input.keyboard.on("keydown_D", function(event) {
+            if (player.data.list.movedRight) {
+                player.setData({ actionRight: true, actionLeft: false });
+            } else if (player.data.list.movedLeft) {
+                player.setData({ actionRight: false, actionLeft: true });
+            }
+        });
+    } //CLOSE KICK FUNCTION
+
     setTimeout(function() {
         if (player1) {
             jumpListener(player1);
+            punchListener(player1);
+            kickListener(player1);
         }
     }, 200);
 } //CLOSES CREATE FUNCTION
@@ -256,8 +282,112 @@ function create() {
 ///////////////////////////////////////////////////////////////////////////////////
 
 function update() {
+    var self = this;
     cursors = this.input.keyboard.createCursorKeys();
+    this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
+    //CHARACTER MOVEMENTS
+    function characterMove(player) {
+        if (
+            (cursors.left.isDown && self.key_A.isDown) ||
+            (cursors.right.isDown && self.key_A.isDown)
+        ) {
+            if (player.data.list.actionLeft) {
+                player.setData({
+                    actionRight: false,
+                    actionLeft: true
+                });
+                player.anims.play("leftPunch", true);
+            } else if (player.data.list.actionRight) {
+                player.setData({
+                    actionRight: true,
+                    actionLeft: false
+                });
+                player.anims.play("rightPunch", true);
+            }
+        } else if (
+            (cursors.left.isDown && self.key_D.isDown) ||
+            (cursors.right.isDown && self.key_D.isDown)
+        ) {
+            if (player.data.list.actionLeft) {
+                player.setData({
+                    actionRight: false,
+                    actionLeft: true
+                });
+                player.anims.play("leftKick", true);
+            } else if (player.data.list.actionRight) {
+                player.setData({
+                    actionRight: true,
+                    actionLeft: false
+                });
+                player.anims.play("rightKick", true);
+            }
+        } else if (cursors.left.isDown) {
+            if (player.body.touching.down) {
+                player.setVelocityX(-200);
+                player.anims.play("leftRun", true);
+            } else {
+                player.setVelocityX(-200);
+                player.anims.play("leftJump", true);
+            }
+            player.setData({ movedRight: false });
+            player.setData({ movedLeft: true });
+        } else if (cursors.right.isDown) {
+            if (player.body.touching.down) {
+                player.setVelocityX(200);
+                player.anims.play("rightRun", true);
+            } else {
+                player.setVelocityX(200);
+                player.anims.play("rightJump", true);
+            }
+            player.setData({ movedLeft: false });
+            player.setData({ movedRight: true });
+        } else if (self.key_A.isDown) {
+            if (player.data.list.actionLeft) {
+                player.setData({ actionRight: false, actionLeft: true });
+                player.anims.play("leftPunch", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            } else if (player.data.list.actionRight) {
+                player.setData({ actionRight: true, actionLeft: false });
+                player.anims.play("rightPunch", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            }
+        } else if (self.key_D.isDown) {
+            if (player.data.list.actionLeft) {
+                player.setData({ actionRight: false, actionLeft: true });
+                player.anims.play("leftKick", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            } else if (player.data.list.actionRight) {
+                player.setData({ actionRight: true, actionLeft: false });
+                player.anims.play("rightKick", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            }
+        } else {
+            player.setVelocityX(0);
+            if (player.data.list.movedRight) {
+                if (!player.body.touching.down) {
+                    player.anims.play("rightJumpB");
+                } else {
+                    player.anims.play("neutralRight");
+                }
+            } else {
+                if (!player.body.touching.down) {
+                    player.anims.play("leftJumpB");
+                } else {
+                    player.anims.play("neutralLeft");
+                }
+            }
+        }
+    }
     setTimeout(function() {
         if (player1) {
             characterMove(player1);
@@ -270,45 +400,6 @@ function update() {
 /////////////////////////////// O T H E R S ///////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-//CHARACTER MOVEMENTS
-function characterMove(player) {
-    if (cursors.left.isDown) {
-        if (player.body.touching.down) {
-            player.setVelocityX(-200);
-            player.anims.play("leftRun", true);
-        } else {
-            player.setVelocityX(-200);
-            player.anims.play("leftJump", true);
-        }
-        player.setData({ movedRight: false });
-        player.setData({ movedLeft: true });
-    } else if (cursors.right.isDown) {
-        if (player.body.touching.down) {
-            player.setVelocityX(200);
-            player.anims.play("rightRun", true);
-        } else {
-            player.setVelocityX(200);
-            player.anims.play("rightJump", true);
-        }
-        player.setData({ movedLeft: false });
-        player.setData({ movedRight: true });
-    } else {
-        player.setVelocityX(0);
-        if (player.data.list.movedRight) {
-            if (!player.body.touching.down) {
-                player.anims.play("rightJumpB");
-            } else {
-                player.anims.play("neutralRight");
-            }
-        } else {
-            if (!player.body.touching.down) {
-                player.anims.play("leftJumpB");
-            } else {
-                player.anims.play("neutralLeft");
-            }
-        }
-    }
-}
 function resetPlayerPosition(player) {
     player.x = 100; //randomize later
     player.y = 100; //randomize later
