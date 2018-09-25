@@ -231,12 +231,6 @@ function create() {
 
     //PUNCH FUNCTION
     function punchListener(player) {
-        // if (player.body.touching.down) {
-        //     player.setData({ jump: 2 });
-        // }
-        // if (player.body.touching.none) {
-        //     player.setData({ jump: 1 });
-        // }
         self.input.keyboard.on("keydown_A", function(event) {
             if (player.data.list.movedRight) {
                 player.setData({ actionRight: true, actionLeft: false });
@@ -250,12 +244,6 @@ function create() {
     //KICK function
 
     function kickListener(player) {
-        //     // if (player.body.touching.down) {
-        //     //     player.setData({ jump: 2 });
-        //     // }
-        //     // if (player.body.touching.none) {
-        //     //     player.setData({ jump: 1 });
-        //     // }
         self.input.keyboard.on("keydown_D", function(event) {
             if (player.data.list.movedRight) {
                 player.setData({ actionRight: true, actionLeft: false });
