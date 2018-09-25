@@ -26,20 +26,59 @@ function preload() {
         frameWidth: 79.875,
         frameHeight: 89.75
     });
+    this.load.spritesheet("player2", "assets/player2.png", {
+        frameWidth: 80,
+        frameHeight: 110
+    });
+    this.load.spritesheet("player3", "assets/player3.png", {
+        frameWidth: 80,
+        frameHeight: 110
+    });
+    this.load.spritesheet("player4", "assets/player4.png", {
+        frameWidth: 80,
+        frameHeight: 110
+    });
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// C R E A T E ///////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
 function create() {
+    var self = this;
+    players = this.physics.add.group();
     this.socket = io(); //SOCKET ACTIVATED
+
+    //ADD IMAGES, BACKGROUND, COLLIDERS
+    this.add.image(320, 180, "sky");
+    platforms = this.physics.add.staticGroup();
+    platforms
+        .create(320, 290, "ground")
+        .setScale(1.2)
+        .refreshBody();
+    self.physics.add.collider(players, platforms);
+
+    //SOCKET LISTENERS
     this.socket.on("currentPlayers", function(players) {
         Object.keys(players).forEach(function(id) {
-            if (players[id].playerId === self.socket.id) {
-                addPlayer(self, players[id]);
+            if (id === self.socket.id) {
+                setTimeout(function() {
+                    addPlayer(self, players[id]);
+                }, 600);
             }
         });
+        console.log(players);
     });
+    // this.socket.on("newPlayer", function(newPlayer) {
+    //     Object.keys(players).forEach(function(id) {
+    //         if (players[id].playerId === self.socket.id) {
+    //             addPlayer(self, players[id]);
+    //         }
+    //     });
+    //     console.log(newPlayer);
+    // });
 
-    this.add.image(320, 180, "sky");
-
+    //SCORE TEXTS
     scoreTextP1 = this.add.text(40, 16, "P1: 5", {
         fontSize: "22px",
         fill: "#000"
@@ -56,27 +95,9 @@ function create() {
         fontSize: "22px",
         fill: "#000"
     });
-    platforms = this.physics.add.staticGroup();
-    //ADD PLAYERS
-    player1 = this.physics.add.sprite(100, 150, "player1");
-    player1.setScale(0.5, 0.5);
-    player1.setData({
-        alive: true,
-        lives: 5,
-        jump: 0,
-        movedLeft: false,
-        movedRight: false
-    });
-    player1.body.setGravityY(300);
-    //CLOSE ADD PLAYERS
-    this.physics.add.collider(player1, platforms);
+    // this.physics.add.collider(player1, platforms);
+    console.log("PLATFORMS", platforms);
 
-    platforms
-        .create(320, 290, "ground")
-        .setScale(1.2)
-        .refreshBody();
-
-    player1.setBounce(0.2);
     // player1.setCollideWorldBounds(false);
 
     this.anims.create({
@@ -205,8 +226,25 @@ function create() {
         repeat: -1
     });
 
+    //ADD PLAYERS
+    function addPlayer(self, playerInfo) {
+        curPlayer = "player" + playerInfo.playerNo;
+        self.curPlayer = players
+            .create(playerInfo.x, playerInfo.y, curPlayer)
+            .setScale(0.5, 0.5)
+            .setData({
+                alive: true,
+                lives: 5,
+                jump: 0,
+                movedLeft: false,
+                movedRight: false
+            });
+        // self.physics.add.collider(players, platforms);
+        self.curPlayer.body.setGravityY(300);
+        self.curPlayer.setBounce(0.2);
+    }
+
     // DOUBLE JUMP
-    var self = this;
     function jumpListener(player) {
         if (player.body.touching.down) {
             player.setData({ jump: 2 });
@@ -239,6 +277,10 @@ var borderLimitTop = -100;
 var borderLimitLeft = -100;
 var borderLimitRight = game.config.width + 100;
 var borderLimitBot = game.config.height + 100;
+
+///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// U P D A T E ///////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 
 function update() {
     cursors = this.input.keyboard.createCursorKeys();
