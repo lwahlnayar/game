@@ -45,7 +45,8 @@ io.on("connection", function(socket) {
         players[socket.id] = {
             x: Math.floor(Math.random() * 420) + 120, //120-500
             y: 80,
-            playerNo: playerNum
+            playerNo: playerNum,
+            socketId: socket.id
         };
     }
     console.log("PLAYERS-------------->", players);
@@ -60,28 +61,6 @@ io.on("connection", function(socket) {
         playerCount -= 1;
         console.log(`user disconnected: ${socket.id}`);
         console.log("PLAYERS REMAINING ----------->", players);
-        // io.emit("disconnect", socket.id);
+        io.emit("userDisconnect", socket.id);
     });
 });
-
-// if (!userLimit) {
-// players[socket.id] = {
-//     x: Math.floor(Math.random() * 500) + 120, //120-500
-//     y: 80,
-//     playerId: socket.id
-// };
-// } else {
-//     console.log("max user limit reached!!");
-// }
-// let arrayOnlineUsers = Object.keys(players);
-// console.log(arrayOnlineUsers);
-// if (arrayOnlineUsers.length >= 4) {
-//     userLimit = true;
-// } else {
-//     userLimit = false;
-// }
-// if (arrayOnlineUsers.length > 4) {
-//     newPlayerLimit = true;
-// } else {
-//     newPlayerLimit = false;
-// } // limits to socket emits
