@@ -30,7 +30,9 @@
 
     function preload() {
         this.load.image("sky", "assets/sky2.jpg");
-        this.load.image("ground", "assets/platform.png");
+        this.load.image("ground", "assets/platform2.png");
+        this.load.image("cloud", "assets/cloud.png");
+
         this.load.spritesheet("rightplayer1", "assets/rightplayer1.png", {
             frameWidth: 80,
             frameHeight: 110
@@ -79,10 +81,23 @@
         this.add.image(320, 180, "sky");
         platforms = this.physics.add.staticGroup();
         platforms
-            .create(320, 290, "ground")
-            .setScale(1.2)
+            .create(320, 340, "ground")
+            .setScale(1.5)
             .refreshBody();
         self.physics.add.collider(players, platforms);
+
+        clouds = this.physics.add.staticGroup();
+        clouds
+            .create(25, 150, "cloud")
+            .setScale(1.5)
+            .refreshBody();
+
+        clouds
+            .create(150, 450, "cloud")
+            .setScale(1.5)
+            .refreshBody();
+
+        self.physics.add.collider(players, clouds);
 
         //SOCKET LISTENERS
         this.socket.on("currentPlayers", function(players) {
@@ -171,15 +186,7 @@
             frameRate: 10,
             repeat: -1
         });
-        // this.anims.create({
-        //     key: "leftJumpB",
-        //     frames: this.anims.generateFrameNumbers("player1", {
-        //         start: 30,
-        //         end: 30
-        //     }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
+
         this.anims.create({
             key: "leftHurt",
             frames: [{ key: "leftplayer1", frame: 4 }],
@@ -221,7 +228,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "JumpB",
+            key: "jumpB",
             frames: [{ key: "rightplayer1", frame: 8 }],
             frameRate: 10
         });
@@ -320,7 +327,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "JumpB2",
+            key: "jumpB2",
             frames: [{ key: "rightplayer2", frame: 8 }],
             frameRate: 10
         });
@@ -329,8 +336,6 @@
             frames: [{ key: "rightplayer2", frame: 4 }],
             frameRate: 10
         });
-
-        /////////////////////////////////////////////////////////////////////
 
         /////////////////////////////////////////////////ANIMATIONS PLAYER 3
         this.anims.create({
@@ -380,15 +385,7 @@
             frameRate: 10,
             repeat: -1
         });
-        // this.anims.create({
-        //     key: "leftJumpB1",
-        //     frames: this.anims.generateFrameNumbers("player1", {
-        //         start: 30,
-        //         end: 30
-        //     }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
+
         this.anims.create({
             key: "leftHurt3",
             frames: [{ key: "leftplayer3", frame: 4 }],
@@ -430,7 +427,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "JumpB3",
+            key: "jumpB3",
             frames: [{ key: "rightplayer3", frame: 8 }],
             frameRate: 10
         });
@@ -531,7 +528,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "JumpB4",
+            key: "jumpB4",
             frames: [{ key: "rightplayer4", frame: 8 }],
             frameRate: 10
         });
@@ -770,13 +767,13 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("rightJumpB");
+                        player.anims.play("jumpB");
                     } else {
                         player.anims.play("neutralRight");
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("leftJump");
+                        player.anims.play("jumpB");
                     } else {
                         player.anims.play("neutralLeft");
                     }
@@ -884,13 +881,13 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("rightJumpB2");
+                        player.anims.play("jumpB2");
                     } else {
                         player.anims.play("neutralRight2");
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("leftJump2");
+                        player.anims.play("jumpB2");
                     } else {
                         player.anims.play("neutralLeft2");
                     }
@@ -998,13 +995,13 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("rightJumpB3");
+                        player.anims.play("jmpB3");
                     } else {
                         player.anims.play("neutralRight3");
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("leftJump3");
+                        player.anims.play("jumpB3");
                     } else {
                         player.anims.play("neutralLeft3");
                     }
@@ -1117,13 +1114,13 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("rightJumpB4");
+                        player.anims.play("jumpB4");
                     } else {
                         player.anims.play("neutralRight4");
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("leftJump4");
+                        player.anims.play("jumpB4");
                     } else {
                         player.anims.play("neutralLeft4");
                     }
@@ -1141,7 +1138,6 @@
                 var data = player1.data.list;
                 characterMove(player1);
                 deathCheck(player1);
-                deathCheck(player2);
                 self.socket.emit("playerMovement", { x, y, data });
             } else if (
                 typeof player2 != "undefined" &&
@@ -1191,7 +1187,7 @@
             player.setData("alive", false);
             player.setVelocity(0, 10);
             player.setGravityY(10);
-            player.setPosition(100, 100);
+            player.setPosition(Math.floor(Math.random() * 400) + 150, 100);
             //show death animation here
         }
         if (!player.data.list.alive) {
@@ -1230,6 +1226,6 @@
                 player: curPlayer
             });
         window[curPlayer].body.setGravityY(300);
-        window[curPlayer].setBounce(0.2);
+        // window[curPlayer].setBounce(0.2);
     }
 })(); // CLOSE IIFE

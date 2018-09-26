@@ -43,7 +43,7 @@ io.on("connection", function(socket) {
         console.log("no player to add!");
     } else {
         players[socket.id] = {
-            x: Math.floor(Math.random() * 420) + 120, //120-500
+            x: Math.floor(Math.random() * 400) + 150,
             y: 80,
             playerNo: playerNum,
             socketId: socket.id
