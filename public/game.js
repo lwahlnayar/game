@@ -26,19 +26,36 @@ var borderLimitBot = game.config.height + 100;
 function preload() {
     this.load.image("sky", "assets/sky2.jpg");
     this.load.image("ground", "assets/platform.png");
-    this.load.spritesheet("player1", "assets/player1.png", {
+    this.load.spritesheet("rightplayer1", "assets/rightplayer1.png", {
         frameWidth: 80,
         frameHeight: 110
     });
-    this.load.spritesheet("player2", "assets/player2.png", {
+    this.load.spritesheet("rightplayer2", "assets/rightplayer2.png", {
         frameWidth: 80,
         frameHeight: 110
     });
-    this.load.spritesheet("player3", "assets/player3.png", {
+    this.load.spritesheet("rightplayer3", "assets/rightplayer3.png", {
         frameWidth: 80,
         frameHeight: 110
     });
-    this.load.spritesheet("player4", "assets/player4.png", {
+    this.load.spritesheet("rightplayer4", "assets/rightplayer4.png", {
+        frameWidth: 80,
+        frameHeight: 110
+    });
+    //otherside
+    this.load.spritesheet("leftplayer1", "assets/leftplayer1.png", {
+        frameWidth: 80,
+        frameHeight: 110
+    });
+    this.load.spritesheet("leftplayer2", "assets/leftplayer2.png", {
+        frameWidth: 80,
+        frameHeight: 110
+    });
+    this.load.spritesheet("leftplayer3", "assets/leftplayer3.png", {
+        frameWidth: 80,
+        frameHeight: 110
+    });
+    this.load.spritesheet("leftplayer4", "assets/leftplayer4.png", {
         frameWidth: 80,
         frameHeight: 110
     });
@@ -64,17 +81,17 @@ function create() {
 
     //SOCKET LISTENERS
     this.socket.on("currentPlayers", function(players) {
-        console.log(players);
         Object.keys(players).forEach(function(id) {
             setTimeout(function() {
-                addPlayer(self, players[id]);
+                console.log("player brackets id current plaeyers", players[id]);
+                addPlayers(self, players[id]);
             }, 50);
         });
     });
     this.socket.on("newPlayer", function(playerInfo) {
-        console.log(playerInfo);
         setTimeout(function() {
-            addOtherPlayers(self, playerInfo);
+            console.log("new player brackets id current plaeyers", playerInfo);
+            addPlayers(self, playerInfo);
         }, 50);
     });
     this.socket.on("playerMoved", function(playerInfo) {
@@ -112,281 +129,431 @@ function create() {
         fill: "#000"
     });
 
-    //Animations PLAYER 1
+    //ANIMATIONS PLAYER 1
     this.anims.create({
         key: "neutralRight",
-        frames: [
-            "player1",
-            {
-                key: "player1",
-                frame: 0
-            }
-        ],
+        frames: [{ key: "rightplayer1", frame: 0 }],
         frameRate: 18
     });
 
     this.anims.create({
         key: "neutralLeft",
-        frames: [
-            "player1",
-            {
-                key: "player1",
-                frame: 16
-            }
-        ],
+        frames: [{ key: "leftplayer1", frame: 8 }],
         frameRate: 18
     });
 
     this.anims.create({
         key: "leftRun",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 16,
-            end: 19
-        }),
+        frames: [
+            { key: "leftplayer1", frame: 10 },
+            { key: "leftplayer1", frame: 16 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "leftPunch",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 20,
-            end: 22
-        }),
+        frames: [
+            { key: "leftplayer1", frame: 12 },
+            { key: "leftplayer1", frame: 8 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "leftKick",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 26,
-            end: 28
-        }),
+        frames: [
+            { key: "leftplayer1", frame: 11 },
+            { key: "leftplayer1", frame: 8 }
+        ],
         frameRate: 10,
         repeat: -1
     });
     this.anims.create({
         key: "leftJump",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 30,
-            end: 30
-        }),
+        frames: [{ key: "leftplayer1", frame: 7 }],
         frameRate: 10,
         repeat: -1
     });
-    this.anims.create({
-        key: "leftJumpB",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 30,
-            end: 30
-        }),
-        frameRate: 10,
-        repeat: -1
-    });
+    // this.anims.create({
+    //     key: "leftJumpB",
+    //     frames: this.anims.generateFrameNumbers("player1", {
+    //         start: 30,
+    //         end: 30
+    //     }),
+    //     frameRate: 10,
+    //     repeat: -1
+    // });
     this.anims.create({
         key: "leftHurt",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 24,
-            end: 25
-        }),
-        frameRate: 10,
-        repeat: -1
+        frames: [{ key: "leftplayer1", frame: 4 }],
+        frameRate: 10
     });
 
     this.anims.create({
         key: "rightRun",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 3,
-            end: 6
-        }),
+        frames: [
+            { key: "rightplayer1", frame: 10 },
+            { key: "rightplayer1", frame: 16 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "rightPunch",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 0,
-            end: 2
-        }),
+        frames: [
+            { key: "rightplayer1", frame: 14 },
+            { key: "rightplayer1", frame: 0 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "rightKick",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 10,
-            end: 12
-        }),
+        frames: [
+            { key: "rightplayer1", frame: 15 },
+            { key: "rightplayer1", frame: 16 }
+        ],
         frameRate: 10,
         repeat: -1
     });
     this.anims.create({
         key: "rightJump",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 8,
-            end: 8
-        }),
-        frameRate: 10,
-        repeat: -1
+        frames: [{ key: "rightplayer1", frame: 1 }],
+        frameRate: 10
     });
     this.anims.create({
-        key: "rightJumpB",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 8,
-            end: 8
-        }),
-        frameRate: 10,
-        repeat: -1
+        key: "JumpB",
+        frames: [{ key: "rightplayer1", frame: 8 }],
+        frameRate: 10
     });
     this.anims.create({
         key: "rightHurt",
-        frames: this.anims.generateFrameNumbers("player1", {
-            start: 13,
-            end: 14
-        }),
-        frameRate: 10,
-        repeat: -1
+        frames: [{ key: "rightplayer1", frame: 4 }],
+        frameRate: 10
     });
-    //ANIMATIONS PLAYER 2
+
+    //////////////////////////////////////////////ANIMATIONS PLAYER 2
     this.anims.create({
         key: "neutralRight2",
-        frames: [
-            "player2",
-            {
-                key: "player2",
-                frame: 0
-            }
-        ],
+        frames: [{ key: "rightplayer2", frame: 0 }],
         frameRate: 18
     });
 
     this.anims.create({
         key: "neutralLeft2",
-        frames: [
-            "player2",
-            {
-                key: "player2",
-                frame: 16
-            }
-        ],
+        frames: [{ key: "leftplayer2", frame: 8 }],
         frameRate: 18
     });
 
     this.anims.create({
         key: "leftRun2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 16,
-            end: 19
-        }),
+        frames: [
+            { key: "leftplayer2", frame: 16 },
+            { key: "leftplayer2", frame: 10 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "leftPunch2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 20,
-            end: 22
-        }),
+        frames: [
+            { key: "leftplayer2", frame: 12 },
+            { key: "leftplayer2", frame: 8 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "leftKick2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 26,
-            end: 28
-        }),
+        frames: [
+            { key: "leftplayer2", frame: 11 },
+            { key: "leftplayer2", frame: 8 }
+        ],
         frameRate: 10,
         repeat: -1
     });
     this.anims.create({
         key: "leftJump2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 30,
-            end: 30
-        }),
+        frames: [{ key: "leftplayer2", frame: 7 }],
         frameRate: 10,
         repeat: -1
     });
-    this.anims.create({
-        key: "leftJumpB2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 30,
-            end: 30
-        }),
-        frameRate: 10,
-        repeat: -1
-    });
+    // this.anims.create({
+    //     key: "leftJumpB2",
+    //     frames: this.anims.generateFrameNumbers("player2", {
+    //         start: 30,
+    //         end: 30
+    //     }),
+    //     frameRate: 10,
+    //     repeat: -1
+    // });
     this.anims.create({
         key: "leftHurt2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 24,
-            end: 25
-        }),
-        frameRate: 10,
-        repeat: -1
+        frames: [{ key: "leftplayer2", frame: 4 }],
+        frameRate: 10
     });
 
     this.anims.create({
         key: "rightRun2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 3,
-            end: 6
-        }),
+        frames: [
+            { key: "rightplayer2", frame: 10 },
+            { key: "rightplayer2", frame: 16 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "rightPunch2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 0,
-            end: 2
-        }),
+        frames: [
+            { key: "rightplayer2", frame: 14 },
+            { key: "rightplayer2", frame: 0 }
+        ],
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "rightKick2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 10,
-            end: 12
-        }),
+        frames: [
+            { key: "rightplayer2", frame: 15 },
+            { key: "rightplayer2", frame: 16 }
+        ],
         frameRate: 10,
         repeat: -1
     });
     this.anims.create({
         key: "rightJump2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 8,
-            end: 8
-        }),
-        frameRate: 10,
-        repeat: -1
+        frames: [{ key: "rightplayer2", frame: 1 }],
+        frameRate: 10
     });
     this.anims.create({
-        key: "rightJumpB2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 8,
-            end: 8
-        }),
-        frameRate: 10,
-        repeat: -1
+        key: "JumpB2",
+        frames: [{ key: "rightplayer2", frame: 8 }],
+        frameRate: 10
     });
     this.anims.create({
         key: "rightHurt2",
-        frames: this.anims.generateFrameNumbers("player2", {
-            start: 13,
-            end: 14
-        }),
+        frames: [{ key: "rightplayer2", frame: 4 }],
+        frameRate: 10
+    });
+
+    /////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////ANIMATIONS PLAYER 3
+    this.anims.create({
+        key: "neutralRight3",
+        frames: [{ key: "rightplayer3", frame: 0 }],
+        frameRate: 18
+    });
+
+    this.anims.create({
+        key: "neutralLeft3",
+        frames: [{ key: "leftplayer3", frame: 8 }],
+        frameRate: 18
+    });
+
+    this.anims.create({
+        key: "leftRun3",
+        frames: [
+            { key: "leftplayer3", frame: 16 },
+            { key: "leftplayer3", frame: 10 }
+        ],
         frameRate: 10,
         repeat: -1
+    });
+
+    this.anims.create({
+        key: "leftPunch3",
+        frames: [
+            { key: "leftplayer3", frame: 12 },
+            { key: "leftplayer3", frame: 8 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "leftKick3",
+        frames: [
+            { key: "leftplayer3", frame: 11 },
+            { key: "leftplayer3", frame: 8 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "leftJump3",
+        frames: [{ key: "leftplayer3", frame: 7 }],
+        frameRate: 10,
+        repeat: -1
+    });
+    // this.anims.create({
+    //     key: "leftJumpB1",
+    //     frames: this.anims.generateFrameNumbers("player1", {
+    //         start: 30,
+    //         end: 30
+    //     }),
+    //     frameRate: 10,
+    //     repeat: -1
+    // });
+    this.anims.create({
+        key: "leftHurt3",
+        frames: [{ key: "leftplayer3", frame: 4 }],
+        frameRate: 10
+    });
+
+    this.anims.create({
+        key: "rightRun3",
+        frames: [
+            { key: "rightplayer3", frame: 10 },
+            { key: "rightplayer3", frame: 16 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "rightPunch3",
+        frames: [
+            { key: "rightplayer3", frame: 14 },
+            { key: "rightplayer3", frame: 0 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "rightKick3",
+        frames: [
+            { key: "rightplayer3", frame: 15 },
+            { key: "rightplayer3", frame: 16 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "rightJump3",
+        frames: [{ key: "rightplayer3", frame: 1 }],
+        frameRate: 10
+    });
+    this.anims.create({
+        key: "JumpB3",
+        frames: [{ key: "rightplayer3", frame: 8 }],
+        frameRate: 10
+    });
+    this.anims.create({
+        key: "rightHurt3",
+        frames: [{ key: "rightplayer3", frame: 4 }],
+        frameRate: 10
+    });
+
+    /////////////////////////////////ANIMATIONS PLAYER 4
+    this.anims.create({
+        key: "neutralRight4",
+        frames: [{ key: "rightplayer4", frame: 0 }],
+        frameRate: 18
+    });
+
+    this.anims.create({
+        key: "neutralLeft4",
+        frames: [{ key: "leftplayer4", frame: 8 }],
+        frameRate: 18
+    });
+
+    this.anims.create({
+        key: "leftRun4",
+        frames: [
+            { key: "leftplayer4", frame: 16 },
+            { key: "leftplayer4", frame: 10 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "leftPunch4",
+        frames: [
+            { key: "leftplayer4", frame: 12 },
+            { key: "leftplayer4", frame: 8 }
+        ],
+
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "leftKick4",
+        frames: [
+            { key: "leftplayer4", frame: 11 },
+            { key: "leftplayer4", frame: 8 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "leftJump4",
+        frames: [{ key: "leftplayer4", frame: 7 }],
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "leftHurt4",
+        frames: [{ key: "leftplayer4", frame: 4 }],
+        frameRate: 10
+    });
+
+    this.anims.create({
+        key: "rightRun4",
+        frames: [
+            { key: "rightplayer4", frame: 10 },
+            { key: "rightplayer4", frame: 16 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "rightPunch4",
+        frames: [
+            { key: "rightplayer4", frame: 14 },
+            { key: "rightplayer4", frame: 0 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "rightKick4",
+        frames: [
+            { key: "rightplayer4", frame: 15 },
+            { key: "rightplayer4", frame: 16 }
+        ],
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "rightJump4",
+        frames: [{ key: "rightplayer4", frame: 1 }],
+        frameRate: 10
+    });
+    this.anims.create({
+        key: "JumpB4",
+        frames: [{ key: "rightplayer4", frame: 8 }],
+        frameRate: 10
+    });
+    this.anims.create({
+        key: "rightHurt4",
+        frames: [{ key: "rightplayer4", frame: 4 }],
+        frameRate: 10
     });
 
     // DOUBLE JUMP
@@ -482,7 +649,7 @@ function update() {
     this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-    //CHARACTER MOVEMENTS
+    // //CHARACTER MOVEMENTS
     function characterMove(player) {
         if (
             (cursors.left.isDown && self.key_A.isDown) ||
@@ -576,7 +743,7 @@ function update() {
                 }
             } else {
                 if (!player.body.touching.down) {
-                    player.anims.play("leftJumpB");
+                    player.anims.play("leftJump");
                 } else {
                     player.anims.play("neutralLeft");
                 }
@@ -683,7 +850,6 @@ function update() {
             }
         }
     }
-
     function characterMove3(player) {
         if (
             (cursors.left.isDown && self.key_A.isDown) ||
@@ -694,13 +860,13 @@ function update() {
                     actionRight: false,
                     actionLeft: true
                 });
-                player.anims.play("leftPunch2", true);
+                player.anims.play("leftPunch3", true);
             } else if (player.data.list.actionRight) {
                 player.setData({
                     actionRight: true,
                     actionLeft: false
                 });
-                player.anims.play("rightPunch2", true);
+                player.anims.play("rightPunch3", true);
             }
         } else if (
             (cursors.left.isDown && self.key_D.isDown) ||
@@ -711,44 +877,44 @@ function update() {
                     actionRight: false,
                     actionLeft: true
                 });
-                player.anims.play("leftKick2", true);
+                player.anims.play("leftKick3", true);
             } else if (player.data.list.actionRight) {
                 player.setData({
                     actionRight: true,
                     actionLeft: false
                 });
-                player.anims.play("rightKick2", true);
+                player.anims.play("rightKick3", true);
             }
         } else if (cursors.left.isDown) {
             if (player.body.touching.down) {
                 player.setVelocityX(-200);
-                player.anims.play("leftRun2", true);
+                player.anims.play("leftRun3", true);
             } else {
                 player.setVelocityX(-200);
-                player.anims.play("leftJump2", true);
+                player.anims.play("leftJump3", true);
             }
             player.setData({ movedRight: false });
             player.setData({ movedLeft: true });
         } else if (cursors.right.isDown) {
             if (player.body.touching.down) {
                 player.setVelocityX(200);
-                player.anims.play("rightRun2", true);
+                player.anims.play("rightRun3", true);
             } else {
                 player.setVelocityX(200);
-                player.anims.play("rightJump2", true);
+                player.anims.play("rightJump3", true);
             }
             player.setData({ movedLeft: false });
             player.setData({ movedRight: true });
         } else if (self.key_A.isDown) {
             if (player.data.list.actionLeft) {
                 player.setData({ actionRight: false, actionLeft: true });
-                player.anims.play("leftPunch2", true);
+                player.anims.play("leftPunch3", true);
                 if (!cursors.right.isDown || !cursors.left.isDown) {
                     player.setVelocityX(0);
                 }
             } else if (player.data.list.actionRight) {
                 player.setData({ actionRight: true, actionLeft: false });
-                player.anims.play("rightPunch2", true);
+                player.anims.play("rightPunch3", true);
                 if (!cursors.right.isDown || !cursors.left.isDown) {
                     player.setVelocityX(0);
                 }
@@ -756,13 +922,13 @@ function update() {
         } else if (self.key_D.isDown) {
             if (player.data.list.actionLeft) {
                 player.setData({ actionRight: false, actionLeft: true });
-                player.anims.play("leftKick2", true);
+                player.anims.play("leftKick3", true);
                 if (!cursors.right.isDown || !cursors.left.isDown) {
                     player.setVelocityX(0);
                 }
             } else if (player.data.list.actionRight) {
                 player.setData({ actionRight: true, actionLeft: false });
-                player.anims.play("rightKick2", true);
+                player.anims.play("rightKick3", true);
                 if (!cursors.right.isDown || !cursors.left.isDown) {
                     player.setVelocityX(0);
                 }
@@ -771,15 +937,115 @@ function update() {
             player.setVelocityX(0);
             if (player.data.list.movedRight) {
                 if (!player.body.touching.down) {
-                    player.anims.play("rightJumpB2");
+                    player.anims.play("rightJumpB3");
                 } else {
-                    player.anims.play("neutralRight2");
+                    player.anims.play("neutralRight3");
                 }
             } else {
                 if (!player.body.touching.down) {
-                    player.anims.play("leftJumpB2");
+                    player.anims.play("leftJumpB3");
                 } else {
-                    player.anims.play("neutralLeft2");
+                    player.anims.play("neutralLeft3");
+                }
+            }
+        }
+    }
+    function characterMove4(player) {
+        if (
+            (cursors.left.isDown && self.key_A.isDown) ||
+            (cursors.right.isDown && self.key_A.isDown)
+        ) {
+            if (player.data.list.actionLeft) {
+                player.setData({
+                    actionRight: false,
+                    actionLeft: true
+                });
+                player.anims.play("leftPunch4", true);
+            } else if (player.data.list.actionRight) {
+                player.setData({
+                    actionRight: true,
+                    actionLeft: false
+                });
+                player.anims.play("rightPunch4", true);
+            }
+        } else if (
+            (cursors.left.isDown && self.key_D.isDown) ||
+            (cursors.right.isDown && self.key_D.isDown)
+        ) {
+            if (player.data.list.actionLeft) {
+                player.setData({
+                    actionRight: false,
+                    actionLeft: true
+                });
+                player.anims.play("leftKick4", true);
+            } else if (player.data.list.actionRight) {
+                player.setData({
+                    actionRight: true,
+                    actionLeft: false
+                });
+                player.anims.play("rightKick4", true);
+            }
+        } else if (cursors.left.isDown) {
+            if (player.body.touching.down) {
+                player.setVelocityX(-200);
+                player.anims.play("leftRun4", true);
+            } else {
+                player.setVelocityX(-200);
+                player.anims.play("leftJump4", true);
+            }
+            player.setData({ movedRight: false });
+            player.setData({ movedLeft: true });
+        } else if (cursors.right.isDown) {
+            if (player.body.touching.down) {
+                player.setVelocityX(200);
+                player.anims.play("rightRun4", true);
+            } else {
+                player.setVelocityX(200);
+                player.anims.play("rightJump4", true);
+            }
+            player.setData({ movedLeft: false });
+            player.setData({ movedRight: true });
+        } else if (self.key_A.isDown) {
+            if (player.data.list.actionLeft) {
+                player.setData({ actionRight: false, actionLeft: true });
+                player.anims.play("leftPunch4", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            } else if (player.data.list.actionRight) {
+                player.setData({ actionRight: true, actionLeft: false });
+                player.anims.play("rightPunch4", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            }
+        } else if (self.key_D.isDown) {
+            if (player.data.list.actionLeft) {
+                player.setData({ actionRight: false, actionLeft: true });
+                player.anims.play("leftKick4", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            } else if (player.data.list.actionRight) {
+                player.setData({ actionRight: true, actionLeft: false });
+                player.anims.play("rightKick4", true);
+                if (!cursors.right.isDown || !cursors.left.isDown) {
+                    player.setVelocityX(0);
+                }
+            }
+        } else {
+            player.setVelocityX(0);
+            if (player.data.list.movedRight) {
+                if (!player.body.touching.down) {
+                    player.anims.play("rightJumpB4");
+                } else {
+                    player.anims.play("neutralRight4");
+                }
+            } else {
+                if (!player.body.touching.down) {
+                    player.anims.play("leftJumpB4");
+                } else {
+                    player.anims.play("neutralLeft4");
                 }
             }
         }
@@ -855,10 +1121,10 @@ function deathCheck(player) {
 }
 
 //ADD PLAYERS
-function addPlayer(self, playerInfo) {
+function addPlayers(self, playerInfo) {
     var curPlayer = "player" + playerInfo.playerNo;
     window[curPlayer] = players
-        .create(playerInfo.x, playerInfo.y, curPlayer)
+        .create(playerInfo.x, playerInfo.y, "rightplayer" + playerInfo.playerNo)
         .setScale(0.5, 0.5)
         .setData({
             alive: true,
@@ -871,21 +1137,4 @@ function addPlayer(self, playerInfo) {
         });
     window[curPlayer].body.setGravityY(300);
     window[curPlayer].setBounce(0.2);
-}
-function addOtherPlayers(self, playerInfo) {
-    var otherPlayer = "player" + playerInfo.playerNo;
-    window[otherPlayer] = players
-        .create(playerInfo.x, playerInfo.y, otherPlayer)
-        .setScale(0.5, 0.5)
-        .setData({
-            alive: true,
-            lives: 5,
-            jump: 0,
-            movedLeft: false,
-            movedRight: false,
-            socketId: playerInfo.socketId,
-            player: otherPlayer
-        });
-    window[otherPlayer].body.setGravityY(300);
-    window[otherPlayer].setBounce(0.2);
 }
