@@ -43,7 +43,7 @@ io.on("connection", function(socket) {
         console.log("no player to add!");
     } else {
         players[socket.id] = {
-            x: Math.floor(Math.random() * 420) + 120, //120-500
+            x: Math.floor(Math.random() * 360) + 150,
             y: 80,
             playerNo: playerNum,
             socketId: socket.id
@@ -68,7 +68,8 @@ io.on("connection", function(socket) {
         // console.log(movementData);
         players[socket.id].x = movementData.x;
         players[socket.id].y = movementData.y;
-        players[socket.id].playerData = movementData.data;
+        players[socket.id].data = movementData.data;
+        // console.log("moving", players[socket.id]);
         // // emit a message to all players about the player that moved
         socket.broadcast.emit("playerMoved", players[socket.id]);
     });
