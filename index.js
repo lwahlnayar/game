@@ -68,7 +68,6 @@ io.on("connection", function(socket) {
         // console.log(movementData);
         players[socket.id].x = movementData.x;
         players[socket.id].y = movementData.y;
-        console.log("x movement", players[socket.id].x);
         // // emit a message to all players about the player that moved
         socket.broadcast.emit("playerMoved", players[socket.id]);
     });
