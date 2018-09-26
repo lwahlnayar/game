@@ -126,11 +126,38 @@
                     } else if (playerInfo.playerNo == 4) {
                         count = 4;
                     }
-                    console.log("Count -->", count);
+
+                    // neutralRight: false,
+                    // neutralLeft: false,
+                    // leftRun: false,
+                    // leftPunch: false,
+                    // leftKick: false,
+                    // leftJump: false,
+                    // leftHurt: false,
+                    // rightRun: false,
+                    // rightPunch: false,
+                    // rightKick: false,
+                    // rightJump: false,
+                    // jumpB: true,
+                    // rightHurt: false
+                    /////////////////////START BELOW///////////////////////////////////////////////////////////////////
+
                     //set a dynamic number to concatenate to leftrun, etc
                     p.setPosition(playerInfo.x, playerInfo.y);
                     if (playerInfo.data.leftRun) {
                         p.anims.play("leftRun" + count, true);
+                    } else if (playerInfo.data.rightRun) {
+                        p.anims.play("rightRun" + count, true);
+                    } else if (playerInfo.data.neutralLeft) {
+                        p.anims.play("neutralLeft" + count, true);
+                    } else if (playerInfo.data.neutralRight) {
+                        p.anims.play("neutralRight" + count, true);
+                    } else if (playerInfo.data.leftJump) {
+                        p.anims.play("leftJump" + count, true);
+                    } else if (playerInfo.data.rightJump) {
+                        p.anims.play("rightJump" + count, true);
+                    } else if (playerInfo.data.jumpB) {
+                        p.anims.play("jumpB" + count, true);
                     }
                 }
             });
@@ -694,6 +721,14 @@
                 } else {
                     player.setVelocityX(-200);
                     player.anims.play("leftJump", true);
+                    player.setData({
+                        leftJump: true,
+                        rightJump: false,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedRight: false });
                 player.setData({ movedLeft: true });
@@ -701,9 +736,18 @@
                 if (player.body.touching.down) {
                     player.setVelocityX(200);
                     player.anims.play("rightRun", true);
+                    player.setData({ leftRun: false, rightRun: true }); //
                 } else {
                     player.setVelocityX(200);
                     player.anims.play("rightJump", true);
+                    player.setData({
+                        leftJump: false,
+                        rightJump: true,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedLeft: false });
                 player.setData({ movedRight: true });
@@ -754,14 +798,44 @@
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
                         player.anims.play("jumpB");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralRight");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: true
+                        }); //
                     }
                 } else {
                     if (!player.body.touching.down) {
                         player.anims.play("jumpB");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralLeft");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: true,
+                            neutralRight: false
+                        }); //
                     }
                 }
             }
@@ -809,15 +883,32 @@
                 } else {
                     player.setVelocityX(-200);
                     player.anims.play("leftJump2", true);
+                    player.setData({
+                        leftJump: true,
+                        rightJump: false,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedRight: false, movedLeft: true });
             } else if (cursors.right.isDown) {
                 if (player.body.touching.down) {
                     player.setVelocityX(200);
                     player.anims.play("rightRun2", true);
+                    player.setData({ leftRun: false, rightRun: true }); //
                 } else {
                     player.setVelocityX(200);
                     player.anims.play("rightJump2", true);
+                    player.setData({
+                        leftJump: false,
+                        rightJump: true,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedLeft: false, movedRight: true });
             } else if (self.key_A.isDown) {
@@ -867,14 +958,44 @@
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
                         player.anims.play("jumpB2");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralRight2");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: true
+                        }); //
                     }
                 } else {
                     if (!player.body.touching.down) {
                         player.anims.play("jumpB2");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralLeft2");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: true,
+                            neutralRight: false
+                        }); //
                     }
                 }
             }
@@ -922,6 +1043,14 @@
                 } else {
                     player.setVelocityX(-200);
                     player.anims.play("leftJump3", true);
+                    player.setData({
+                        leftJump: true,
+                        rightJump: false,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedRight: false });
                 player.setData({ movedLeft: true });
@@ -929,9 +1058,18 @@
                 if (player.body.touching.down) {
                     player.setVelocityX(200);
                     player.anims.play("rightRun3", true);
+                    player.setData({ leftRun: false, rightRun: true }); //
                 } else {
                     player.setVelocityX(200);
                     player.anims.play("rightJump3", true);
+                    player.setData({
+                        leftJump: false,
+                        rightJump: true,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedLeft: false });
                 player.setData({ movedRight: true });
@@ -981,15 +1119,45 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("jmpB3");
+                        player.anims.play("jumpB3");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralRight3");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: true
+                        }); //
                     }
                 } else {
                     if (!player.body.touching.down) {
                         player.anims.play("jumpB3");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralLeft3");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: true,
+                            neutralRight: false
+                        }); //
                     }
                 }
             }
@@ -1037,6 +1205,14 @@
                 } else {
                     player.setVelocityX(-200);
                     player.anims.play("leftJump4", true);
+                    player.setData({
+                        leftJump: true,
+                        rightJump: false,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedRight: false });
                 player.setData({ movedLeft: true });
@@ -1044,9 +1220,18 @@
                 if (player.body.touching.down) {
                     player.setVelocityX(200);
                     player.anims.play("rightRun4", true);
+                    player.setData({ leftRun: false, rightRun: true }); //
                 } else {
                     player.setVelocityX(200);
                     player.anims.play("rightJump4", true);
+                    player.setData({
+                        leftJump: false,
+                        rightJump: true,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        leftRun: false,
+                        rightRun: false
+                    }); //
                 }
                 player.setData({ movedLeft: false });
                 player.setData({ movedRight: true });
@@ -1102,14 +1287,44 @@
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
                         player.anims.play("jumpB4");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralRight4");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: true
+                        }); //
                     }
                 } else {
                     if (!player.body.touching.down) {
                         player.anims.play("jumpB4");
+                        player.setData({
+                            jumpB: true,
+                            leftJump: false,
+                            rightJump: false,
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: false,
+                            neutralRight: false
+                        }); //
                     } else {
                         player.anims.play("neutralLeft4");
+                        player.setData({
+                            leftRun: false,
+                            rightRun: false,
+                            neutralLeft: true,
+                            neutralRight: false
+                        }); //
                     }
                 }
             }
