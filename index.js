@@ -49,7 +49,7 @@ io.on("connection", function(socket) {
             socketId: socket.id
         };
     }
-    console.log("PLAYERS-------------->", players);
+    // console.log("PLAYERS-------------->", players);
 
     // send the players object to the new player
     socket.emit("currentPlayers", players);
@@ -60,7 +60,16 @@ io.on("connection", function(socket) {
         delete players[socket.id];
         playerCount -= 1;
         console.log(`user disconnected: ${socket.id}`);
-        console.log("PLAYERS REMAINING ----------->", players);
+        // console.log("PLAYERS REMAINING ----------->", players);
         io.emit("userDisconnect", socket.id);
+    });
+
+    socket.on("playerMovement", function(movementData) {
+        // console.log(movementData);
+        players[socket.id].x = movementData.x;
+        players[socket.id].y = movementData.y;
+        console.log("x movement", players[socket.id].x);
+        // // emit a message to all players about the player that moved
+        socket.broadcast.emit("playerMoved", players[socket.id]);
     });
 });

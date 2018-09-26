@@ -77,6 +77,14 @@ function create() {
             addOtherPlayers(self, playerInfo);
         }, 50);
     });
+    this.socket.on("playerMoved", function(playerInfo) {
+        console.log("player moving!!", playerInfo.x);
+        players.getChildren().forEach(function(p) {
+            if (playerInfo.socketId == p.data.list.socketId) {
+                p.setPosition(playerInfo.x, playerInfo.y);
+            }
+        });
+    });
     this.socket.on("userDisconnect", function(disconectedUserId) {
         console.log("user disconnects!", disconectedUserId);
         players.getChildren().forEach(function(p) {
@@ -433,10 +441,34 @@ function create() {
     } //CLOSE KICK FUNCTION
 
     setTimeout(function() {
-        if (player1) {
+        if (
+            typeof player1 != "undefined" &&
+            self.socket.id == player1.data.list.socketId
+        ) {
             jumpListener(player1);
             punchListener(player1);
             kickListener(player1);
+        } else if (
+            typeof player2 != "undefined" &&
+            self.socket.id == player2.data.list.socketId
+        ) {
+            jumpListener(player2);
+            punchListener(player2);
+            kickListener(player2);
+        } else if (
+            typeof player3 != "undefined" &&
+            self.socket.id == player3.data.list.socketId
+        ) {
+            jumpListener(player3);
+            punchListener(player3);
+            kickListener(player3);
+        } else if (
+            typeof player4 != "undefined" &&
+            self.socket.id == player4.data.list.socketId
+        ) {
+            jumpListener(player4);
+            punchListener(player4);
+            kickListener(player4);
         }
     }, 200);
 } //CLOSES CREATE FUNCTION
@@ -655,45 +687,48 @@ function update() {
 
     setTimeout(function() {
         if (
-            player1.data &&
-            player1.data.list &&
+            typeof player1 != "undefined" &&
             self.socket.id == player1.data.list.socketId
         ) {
+            var x = player1.x;
+            var y = player1.y;
             characterMove(player1);
             deathCheck(player1);
+            self.socket.emit("playerMovement", { x, y });
         } else if (
-            player2.data &&
-            player2.data.list &&
+            typeof player2 != "undefined" &&
             self.socket.id == player2.data.list.socketId
         ) {
+            var x = player2.x;
+            var y = player2.y;
             characterMove2(player2);
             deathCheck(player2);
+            self.socket.emit("playerMovement", { x, y });
         } else if (
-            player3.data &&
-            player3.data.list &&
+            typeof player3 != "undefined" &&
             self.socket.id == player3.data.list.socketId
         ) {
+            var x = player3.x;
+            var y = player3.y;
             characterMove3(player3);
             deathCheck(player3);
+            self.socket.emit("playerMovement", { x, y });
         } else if (
-            player4.data &&
-            player4.data.list &&
+            typeof player4 != "undefined" &&
             self.socket.id == player4.data.list.socketId
         ) {
+            var x = player4.x;
+            var y = player4.y;
             characterMove4(player4);
             deathCheck(player4);
+            self.socket.emit("playerMovement", { x, y });
         }
-    }, 400);
+    }, 50);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// O T H E R S ///////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
-
-function resetPlayerPosition(player) {
-    player.x = 100; //randomize later
-    player.y = 100; //randomize later
-}
 
 function deathCheck(player) {
     var lives = player.data.list.lives;
@@ -707,7 +742,7 @@ function deathCheck(player) {
         player.setData("alive", false);
         player.setVelocity(0, 10);
         player.setGravityY(10);
-        resetPlayerPosition(player);
+        player.setPosition(100, 100);
         //show death animation here
     }
     if (!player.data.list.alive) {
@@ -736,15 +771,6 @@ function addPlayer(self, playerInfo) {
         });
     window[curPlayer].body.setGravityY(300);
     window[curPlayer].setBounce(0.2);
-    // if (self.socket.id == player1.data.list.socketId) {
-    //     curPlayerString = "player1";
-    // } else if (self.socket.id == player2.data.list.socketId) {
-    //     curPlayerString = "player2";
-    // } else if (self.socket.id == player3.data.list.socketId) {
-    //     curPlayerString = "player3";
-    // } else if (self.socket.id == player4.data.list.socketId) {
-    //     curPlayerString = "player4";
-    // }
 }
 function addOtherPlayers(self, playerInfo) {
     var otherPlayer = "player" + playerInfo.playerNo;
