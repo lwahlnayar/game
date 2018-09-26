@@ -141,8 +141,9 @@
                     } else if (playerInfo.data.rightJump) {
                         p.anims.play("rightJump" + count, true);
                     } else if (playerInfo.data.jumpNeutralRight) {
-                        //jumpneutralleft to be created
                         p.anims.play("jumpNeutralRight" + count, true);
+                    } else if (playerInfo.data.jumpNeutralLeft) {
+                        p.anims.play("jumpNeutralLeft" + count, true);
                     } else if (playerInfo.data.leftPunch) {
                         p.anims.play("leftPunch" + count, true);
                     } else if (playerInfo.data.rightPunch) {
@@ -260,6 +261,11 @@
             frameRate: 10
         });
         this.anims.create({
+            key: "jumpNeutralLeft",
+            frames: [{ key: "leftplayer1", frame: 0 }],
+            frameRate: 10
+        });
+        this.anims.create({
             key: "rightHurt",
             frames: [{ key: "rightplayer1", frame: 4 }],
             frameRate: 10
@@ -350,6 +356,11 @@
         this.anims.create({
             key: "jumpNeutralRight2",
             frames: [{ key: "rightplayer2", frame: 8 }],
+            frameRate: 10
+        });
+        this.anims.create({
+            key: "jumpNeutralLeft2",
+            frames: [{ key: "leftplayer2", frame: 0 }],
             frameRate: 10
         });
         this.anims.create({
@@ -445,6 +456,11 @@
             frameRate: 10
         });
         this.anims.create({
+            key: "jumpNeutralLeft3",
+            frames: [{ key: "leftplayer3", frame: 0 }],
+            frameRate: 10
+        });
+        this.anims.create({
             key: "rightHurt3",
             frames: [{ key: "rightplayer3", frame: 4 }],
             frameRate: 10
@@ -535,6 +551,11 @@
         this.anims.create({
             key: "jumpNeutralRight4",
             frames: [{ key: "rightplayer4", frame: 8 }],
+            frameRate: 10
+        });
+        this.anims.create({
+            key: "jumpNeutralLeft4",
+            frames: [{ key: "leftplayer4", frame: 0 }],
             frameRate: 10
         });
         this.anims.create({
@@ -688,6 +709,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -705,6 +727,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -730,6 +753,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -750,6 +774,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -807,6 +832,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -822,6 +848,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -839,6 +866,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -864,6 +892,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -882,6 +911,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -902,6 +932,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -918,6 +949,7 @@
                         player.anims.play("jumpNeutralRight");
                         player.setData({
                             jumpNeutralRight: true,
+                            jumpNeutralLeft: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -936,9 +968,10 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpNeutralRight");
+                        player.anims.play("jumpNeutralLeft");
                         player.setData({
-                            jumpNeutralRight: true,
+                            jumpNeutralLeft: true,
+                            jumpNeutralRight: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -975,6 +1008,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -992,6 +1026,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1017,6 +1052,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1037,6 +1073,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1092,6 +1129,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1107,6 +1145,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1124,6 +1163,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1149,6 +1189,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1167,6 +1208,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1187,6 +1229,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1203,6 +1246,7 @@
                         player.anims.play("jumpNeutralRight2");
                         player.setData({
                             jumpNeutralRight: true,
+                            jumpNeutralLeft: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1221,9 +1265,10 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpNeutralRight2");
+                        player.anims.play("jumpNeutralLeft2");
                         player.setData({
-                            jumpNeutralRight: true,
+                            jumpNeutralLeft: true,
+                            jumpNeutralRight: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1260,6 +1305,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1277,6 +1323,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1302,6 +1349,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1322,6 +1370,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1379,6 +1428,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1394,6 +1444,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1411,6 +1462,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1436,6 +1488,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1454,6 +1507,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1474,6 +1528,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1490,6 +1545,7 @@
                         player.anims.play("jumpNeutralRight3");
                         player.setData({
                             jumpNeutralRight: true,
+                            jumpNeutralLeft: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1508,9 +1564,10 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpNeutralRight3");
+                        player.anims.play("jumpNeutralLeft3");
                         player.setData({
-                            jumpNeutralRight: true,
+                            jumpNeutralLeft: true,
+                            jumpNeutralRight: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1547,6 +1604,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1564,6 +1622,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1589,6 +1648,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1609,6 +1669,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1666,6 +1727,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1681,6 +1743,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1698,6 +1761,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1727,6 +1791,7 @@
                             neutralLeft: false,
                             neutralRight: false,
                             jumpNeutralRight: false,
+                            jumpNeutralLeft: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1746,6 +1811,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1766,6 +1832,7 @@
                         neutralLeft: false,
                         neutralRight: false,
                         jumpNeutralRight: false,
+                        jumpNeutralLeft: false,
                         leftJump: false,
                         rightJump: false,
                         leftRun: false,
@@ -1782,6 +1849,7 @@
                         player.anims.play("jumpNeutralRight4");
                         player.setData({
                             jumpNeutralRight: true,
+                            jumpNeutralLeft: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1800,9 +1868,10 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpNeutralRight4");
+                        player.anims.play("jumpNeutralLeft4");
                         player.setData({
-                            jumpNeutralRight: true,
+                            jumpNeutralLeft: true,
+                            jumpNeutralRight: false,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
