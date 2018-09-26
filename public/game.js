@@ -130,15 +130,15 @@
                     // neutralRight: false,
                     // neutralLeft: false,
                     // leftRun: false,
-                    // leftPunch: false,
-                    // leftKick: false,
+                    // leftPunch: false,--
+                    // leftKick: false,--
                     // leftJump: false,
                     // leftHurt: false,
                     // rightRun: false,
-                    // rightPunch: false,
-                    // rightKick: false,
+                    // rightPunch: false,--
+                    // rightKick: false,--
                     // rightJump: false,
-                    // jumpB: true,
+                    // jumpNeutralRight: true,
                     // rightHurt: false
                     /////////////////////START BELOW///////////////////////////////////////////////////////////////////
 
@@ -156,8 +156,11 @@
                         p.anims.play("leftJump" + count, true);
                     } else if (playerInfo.data.rightJump) {
                         p.anims.play("rightJump" + count, true);
-                    } else if (playerInfo.data.jumpB) {
-                        p.anims.play("jumpB" + count, true);
+                    } else if (playerInfo.data.jumpNeutralRight) {
+                        //jumpneutralleft to be created
+                        p.anims.play("jumpNeutralRight" + count, true);
+                    } else if (playerInfo.data.leftPunch) {
+                        p.anims.play("leftPunch" + count, true);
                     }
                 }
             });
@@ -262,7 +265,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "jumpB",
+            key: "jumpNeutralRight",
             frames: [{ key: "rightplayer1", frame: 8 }],
             frameRate: 10
         });
@@ -355,7 +358,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "jumpB2",
+            key: "jumpNeutralRight2",
             frames: [{ key: "rightplayer2", frame: 8 }],
             frameRate: 10
         });
@@ -447,7 +450,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "jumpB3",
+            key: "jumpNeutralRight3",
             frames: [{ key: "rightplayer3", frame: 8 }],
             frameRate: 10
         });
@@ -540,7 +543,7 @@
             frameRate: 10
         });
         this.anims.create({
-            key: "jumpB4",
+            key: "jumpNeutralRight4",
             frames: [{ key: "rightplayer4", frame: 8 }],
             frameRate: 10
         });
@@ -689,6 +692,13 @@
                         actionLeft: true
                     });
                     player.anims.play("leftPunch", true);
+                    player.setData({
+                        leftPunch: true,
+                        rightPunch: false,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        jumpNeutralRight: false
+                    }); //
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -758,10 +768,24 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
+                    player.setData({
+                        leftPunch: true,
+                        rightPunch: false,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        jumpNeutralRight: false
+                    }); //
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
+                    player.setData({
+                        leftPunch: true,
+                        rightPunch: false,
+                        neutralLeft: false,
+                        neutralRight: false,
+                        jumpNeutralRight: false
+                    }); //
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -797,9 +821,9 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB");
+                        player.anims.play("jumpNeutralRight");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -818,9 +842,9 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB");
+                        player.anims.play("jumpNeutralRight");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -957,9 +981,9 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB2");
+                        player.anims.play("jumpNeutralRight2");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -978,9 +1002,9 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB2");
+                        player.anims.play("jumpNeutralRight2");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1119,9 +1143,9 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB3");
+                        player.anims.play("jumpNeutralRight3");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1140,9 +1164,9 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB3");
+                        player.anims.play("jumpNeutralRight3");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1286,9 +1310,9 @@
                 player.setVelocityX(0);
                 if (player.data.list.movedRight) {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB4");
+                        player.anims.play("jumpNeutralRight4");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1307,9 +1331,9 @@
                     }
                 } else {
                     if (!player.body.touching.down) {
-                        player.anims.play("jumpB4");
+                        player.anims.play("jumpNeutralRight4");
                         player.setData({
-                            jumpB: true,
+                            jumpNeutralRight: true,
                             leftJump: false,
                             rightJump: false,
                             leftRun: false,
@@ -1439,10 +1463,10 @@
                 rightPunch: false,
                 rightKick: false,
                 rightJump: false,
-                jumpB: true,
+                jumpNeutralRight: true,
+                // jumpNeutralLeft: false,
                 rightHurt: false
             });
         window[curPlayer].body.setGravityY(300);
-        // window[curPlayer].setBounce(0.2);
     }
 })(); // CLOSE IIFE
