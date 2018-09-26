@@ -19,6 +19,10 @@
     };
 
     var game = new Phaser.Game(config);
+    var oldPlayer1; //used for scoreboard existential comparison
+    var oldPlayer2; //used for scoreboard existential comparison
+    var oldPlayer3; //used for scoreboard existential comparison
+    var oldPlayer4; //used for scoreboard existential comparison
     var borderLimitTop = -100;
     var borderLimitLeft = -100;
     var borderLimitRight = game.config.width + 100;
@@ -84,20 +88,12 @@
         this.socket.on("currentPlayers", function(players) {
             Object.keys(players).forEach(function(id) {
                 setTimeout(function() {
-                    console.log(
-                        "player brackets id current plaeyers",
-                        players[id]
-                    );
                     addPlayers(self, players[id]);
                 }, 50);
             });
         });
         this.socket.on("newPlayer", function(playerInfo) {
             setTimeout(function() {
-                console.log(
-                    "new player brackets id current plaeyers",
-                    playerInfo
-                );
                 addPlayers(self, playerInfo);
             }, 50);
         });
@@ -112,28 +108,19 @@
         this.socket.on("userDisconnect", function(disconectedUserId) {
             console.log("user disconnects!", disconectedUserId);
             players.getChildren().forEach(function(p) {
+                if (p.data.list.player == "player1") {
+                    oldPlayer1 = null;
+                } else if (p.data.list.player == "player2") {
+                    oldPlayer2 = null;
+                } else if (p.data.list.player == "player3") {
+                    oldPlayer3 = null;
+                } else if (p.data.list.player == "player4") {
+                    oldPlayer4 = null;
+                }
                 if (disconectedUserId == p.data.list.socketId) {
                     p.destroy();
                 }
             });
-        });
-
-        //SCORE TEXTS
-        scoreTextP1 = this.add.text(40, 16, "P1: 5", {
-            fontSize: "22px",
-            fill: "#000"
-        });
-        scoreTextP2 = this.add.text(200, 16, "P2: 0", {
-            fontSize: "22px",
-            fill: "#000"
-        });
-        scoreTextP3 = this.add.text(360, 16, "P3: 0", {
-            fontSize: "22px",
-            fill: "#000"
-        });
-        scoreTextP4 = this.add.text(520, 16, "P4: 0", {
-            fontSize: "22px",
-            fill: "#000"
         });
 
         //ANIMATIONS PLAYER 1
@@ -634,7 +621,7 @@
                 punchListener(player4);
                 kickListener(player4);
             }
-        }, 80);
+        }, 100);
     } //CLOSES CREATE FUNCTION
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -651,7 +638,37 @@
             Phaser.Input.Keyboard.KeyCodes.D
         );
 
-        // //CHARACTER MOVEMENTS
+        // //////////// DYNAMIC SCOREBOARD ///////////////
+        if (!oldPlayer1 && typeof player1 != "undefined") {
+            scoreTextP1 = this.add.text(40, 16, "P1: 5", {
+                fontSize: "22px",
+                fill: "#000"
+            });
+            oldPlayer1 = player1;
+        }
+        if (!oldPlayer2 && typeof player2 != "undefined") {
+            scoreTextP2 = this.add.text(200, 16, "P2: 5", {
+                fontSize: "22px",
+                fill: "#000"
+            });
+            oldPlayer2 = player2;
+        }
+        if (!oldPlayer3 && typeof player3 != "undefined") {
+            scoreTextP3 = this.add.text(360, 16, "P3: 5", {
+                fontSize: "22px",
+                fill: "#000"
+            });
+            oldPlayer3 = player3;
+        }
+        if (!oldPlayer4 && typeof player4 != "undefined") {
+            scoreTextP4 = this.add.text(520, 16, "P4: 5", {
+                fontSize: "22px",
+                fill: "#000"
+            });
+            oldPlayer4 = player4;
+        }
+
+        //////////// CHARACTER MOVEMENTS //////////////
         function characterMove(player) {
             if (
                 (cursors.left.isDown && self.key_A.isDown) ||
@@ -708,6 +725,13 @@
                 player.setData({ movedLeft: false });
                 player.setData({ movedRight: true });
             } else if (self.key_A.isDown) {
+                if (
+                    !player.data.list.actionLeft &&
+                    !player.data.list.actionRight
+                ) {
+                    player.setData({ actionRight: false, actionLeft: true });
+                    player.anims.play("leftPunch", true);
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
@@ -722,6 +746,13 @@
                     }
                 }
             } else if (self.key_D.isDown) {
+                if (
+                    !player.data.list.actionLeft &&
+                    !player.data.list.actionRight
+                ) {
+                    player.setData({ actionRight: false, actionLeft: true });
+                    player.anims.play("leftKick", true);
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick", true);
@@ -808,6 +839,13 @@
                 player.setData({ movedLeft: false });
                 player.setData({ movedRight: true });
             } else if (self.key_A.isDown) {
+                if (
+                    !player.data.list.actionLeft &&
+                    !player.data.list.actionRight
+                ) {
+                    player.setData({ actionRight: false, actionLeft: true });
+                    player.anims.play("leftPunch2", true);
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch2", true);
@@ -822,6 +860,13 @@
                     }
                 }
             } else if (self.key_D.isDown) {
+                if (
+                    !player.data.list.actionLeft &&
+                    !player.data.list.actionRight
+                ) {
+                    player.setData({ actionRight: false, actionLeft: true });
+                    player.anims.play("leftKick2", true);
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick2", true);
@@ -908,6 +953,13 @@
                 player.setData({ movedLeft: false });
                 player.setData({ movedRight: true });
             } else if (self.key_A.isDown) {
+                if (
+                    !player.data.list.actionLeft &&
+                    !player.data.list.actionRight
+                ) {
+                    player.setData({ actionRight: false, actionLeft: true });
+                    player.anims.play("leftPunch3", true);
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch3", true);
@@ -922,6 +974,13 @@
                     }
                 }
             } else if (self.key_D.isDown) {
+                if (
+                    !player.data.list.actionLeft &&
+                    !player.data.list.actionRight
+                ) {
+                    player.setData({ actionRight: false, actionLeft: true });
+                    player.anims.play("leftKick3", true);
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick3", true);
@@ -1008,6 +1067,13 @@
                 player.setData({ movedLeft: false });
                 player.setData({ movedRight: true });
             } else if (self.key_A.isDown) {
+                if (
+                    !player.data.list.actionLeft &&
+                    !player.data.list.actionRight
+                ) {
+                    player.setData({ actionRight: false, actionLeft: true });
+                    player.anims.play("leftPunch4", true);
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch4", true);
@@ -1022,6 +1088,18 @@
                     }
                 }
             } else if (self.key_D.isDown) {
+                if (player.data.list.actionLeft) {
+                    if (
+                        !player.data.list.actionLeft &&
+                        !player.data.list.actionRight
+                    ) {
+                        player.setData({
+                            actionRight: false,
+                            actionLeft: true
+                        });
+                        player.anims.play("leftKick4", true);
+                    }
+                }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick4", true);
@@ -1063,6 +1141,7 @@
                 var data = player1.data.list;
                 characterMove(player1);
                 deathCheck(player1);
+                deathCheck(player2);
                 self.socket.emit("playerMovement", { x, y, data });
             } else if (
                 typeof player2 != "undefined" &&
@@ -1119,8 +1198,15 @@
             lives--;
             console.log("player dies");
             player.setData({ alive: true, lives: lives });
-            // livesP1--;
-            scoreTextP1.setText("P1: " + player.data.list.lives);
+            if (player.data.list.player == "player1") {
+                scoreTextP1.setText("P1:" + player.data.list.lives);
+            } else if (player.data.list.player == "player2") {
+                scoreTextP2.setText("P2:" + player.data.list.lives);
+            } else if (player.data.list.player == "player3") {
+                scoreTextP3.setText("P3:" + player.data.list.lives);
+            } else if (player.data.list.player == "player4") {
+                scoreTextP4.setText("P4:" + player.data.list.lives);
+            }
         }
     }
 
