@@ -87,13 +87,13 @@
 
         clouds = this.physics.add.staticGroup();
         clouds
-            .create(25, 150, "cloud")
+            .create(25, 120, "cloud")
             .setScale(1.5)
             .refreshBody();
 
         clouds
-            .create(150, 450, "cloud")
-            .setScale(1.5)
+            .create(540, 140, "cloud")
+            .setScale(1)
             .refreshBody();
 
         self.physics.add.collider(players, clouds);
