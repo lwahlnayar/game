@@ -171,12 +171,44 @@
                     } else if (damagedPlayer.playerNo == 4) {
                         count = 4;
                     }
-                    // p.setPosition(playerInfo.x, playerInfo.y);
                     console.log(
                         "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
                         damagedPlayer
                     );
                     if (damagedPlayer.data.rightHurt) {
+                        if (
+                            typeof player1 != "undefined" &&
+                            player1.data &&
+                            player1.data.list &&
+                            player1.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player1.setVelocityY(-100);
+                            player1.setVelocityX(-150);
+                        } else if (
+                            typeof player2 != "undefined" &&
+                            player2.data &&
+                            player2.data.list &&
+                            player2.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player2.setVelocityY(-100);
+                            player2.setVelocityX(-150);
+                        } else if (
+                            typeof player3 != "undefined" &&
+                            player3.data &&
+                            player3.data.list &&
+                            player3.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player3.setVelocityY(-100);
+                            player3.setVelocityX(-150);
+                        } else if (
+                            typeof player4 != "undefined" &&
+                            player4.data &&
+                            player4.data.list &&
+                            player4.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player4.setVelocityY(-100);
+                            player4.setVelocityX(-150);
+                        }
                         p.anims.play("rightHurt" + count, true);
                         p.setData({
                             hp: damagedPlayer.data.hp,
@@ -184,6 +216,39 @@
                             rightHurt: false
                         });
                     } else if (damagedPlayer.data.leftHurt) {
+                        if (
+                            typeof player1 != "undefined" &&
+                            player1.data &&
+                            player1.data.list &&
+                            player1.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player1.setVelocityY(-100);
+                            player1.setVelocityX(+150);
+                        } else if (
+                            typeof player2 != "undefined" &&
+                            player2.data &&
+                            player2.data.list &&
+                            player2.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player2.setVelocityY(-100);
+                            player2.setVelocityX(+150);
+                        } else if (
+                            typeof player3 != "undefined" &&
+                            player3.data &&
+                            player3.data.list &&
+                            player3.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player3.setVelocityY(-100);
+                            player3.setVelocityX(+150);
+                        } else if (
+                            typeof player4 != "undefined" &&
+                            player4.data &&
+                            player4.data.list &&
+                            player4.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            player4.setVelocityY(-100);
+                            player4.setVelocityX(+150);
+                        }
                         p.anims.play("leftHurt" + count, true);
                         p.setData({
                             hp: damagedPlayer.data.hp,
