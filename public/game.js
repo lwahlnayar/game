@@ -157,6 +157,37 @@
             });
         });
 
+        this.socket.on("damagedPlayer", function(damagedPlayer) {
+            players.getChildren().forEach(function(p) {
+                if (damagedPlayer.socketId == p.data.list.socketId) {
+                    var count = "";
+                    // console.log("PLAYER FROM SOCKET -->", playerInfo);
+                    if (damagedPlayer.playerNo == 1) {
+                        // console.log("do nothing");
+                    } else if (damagedPlayer.playerNo == 2) {
+                        count = 2;
+                    } else if (damagedPlayer.playerNo == 3) {
+                        count = 3;
+                    } else if (damagedPlayer.playerNo == 4) {
+                        count = 4;
+                    }
+                    // p.setPosition(playerInfo.x, playerInfo.y);
+                    console.log(
+                        "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
+                        damagedPlayer
+                    );
+                    if (damagedPlayer.data.rightHurt) {
+                        p.anims.play("rightHurt" + count, true);
+                        p.setData({
+                            hp: damagedPlayer.data.hp,
+                            leftHurt: true,
+                            rightHurt: false
+                        });
+                    }
+                }
+            });
+        });
+
         this.socket.on("userDisconnect", function(disconectedUserId) {
             console.log("user disconnects!", disconectedUserId);
             players.getChildren().forEach(function(p) {
@@ -711,8 +742,7 @@
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //
                     if (checkIfInRange().length > 0) {
-                        console.log("damage her baby");
-                        doDmg(checkIfInRange());
+                        doDmgLeft(checkIfInRange(), self);
                     }
                 } else if (player.data.list.actionRight) {
                     player.setData({
@@ -786,18 +816,16 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); //state on own player
                     if (checkIfInRange().length > 0) {
-                        console.log("damage her baby");
-                        doDmg(checkIfInRange());
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
                     }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
                     if (checkIfInRange().length > 0) {
-                        console.log("damage her baby");
-                        doDmg(checkIfInRange());
+                        doDmgLeft(checkIfInRange(), self);
                     }
                     player.setData(leftPunchObj); //
                     if (!cursors.right.isDown || !cursors.left.isDown) {
@@ -1538,7 +1566,7 @@
             .setData({
                 alive: true,
                 lives: 5,
-                hp: 300,
+                hp: 500,
                 jump: 0,
                 movedLeft: false,
                 movedRight: false,
@@ -1666,12 +1694,34 @@
         });
         return nearbyEnemies;
     }
-    function doDmg(enemyArray) {
+    function doDmgLeft(enemyArray, self) {
         var dmgQuantity = Math.floor(Math.random() * 4) + 2;
         enemyArray.forEach(function(enemy) {
             var hp = enemy.data.list.hp - dmgQuantity;
+            var enemyData = {
+                socketId: enemy.data.list.socketId,
+                hp,
+                leftHurt: false,
+                rightHurt: true
+            };
             // console.log("remaining hp", enemy, hp);
-            enemy.setData({ hp: hp });
+            // enemy.setData(enemyData); //sets locally
+            self.socket.emit("playerDamaged", { enemyData });
+        });
+    }
+    function doDmgRight(enemyArray, self) {
+        var dmgQuantity = Math.floor(Math.random() * 4) + 2;
+        enemyArray.forEach(function(enemy) {
+            var hp = enemy.data.list.hp - dmgQuantity;
+            var enemyData = {
+                socketId: enemy.data.list.socketId,
+                hp,
+                leftHurt: true,
+                rightHurt: false
+            };
+            // console.log("remaining hp", enemy, hp);
+            // enemy.setData(enemyData); //sets locally
+            self.socket.emit("playerDamaged", { enemyData });
         });
     }
 })(); // CLOSE IIFE
