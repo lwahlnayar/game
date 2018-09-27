@@ -19,10 +19,6 @@
     };
 
     var game = new Phaser.Game(config);
-    var oldPlayer1; //used for scoreboard existential comparison
-    var oldPlayer2; //used for scoreboard existential comparison
-    var oldPlayer3; //used for scoreboard existential comparison
-    var oldPlayer4; //used for scoreboard existential comparison
     var borderLimitTop = -100;
     var borderLimitLeft = -100;
     var borderLimitRight = game.config.width + 100;
@@ -160,17 +156,20 @@
         this.socket.on("userDisconnect", function(disconectedUserId) {
             console.log("user disconnects!", disconectedUserId);
             players.getChildren().forEach(function(p) {
-                if (p.data.list.player == "player1") {
-                    console.log("im here!!!");
-                    oldPlayer1 = null;
-                } else if (p.data.list.player == "player2") {
-                    oldPlayer2 = null;
-                } else if (p.data.list.player == "player3") {
-                    oldPlayer3 = null;
-                } else if (p.data.list.player == "player4") {
-                    oldPlayer4 = null;
-                }
+                // console.log("p.data.list.player", p.data.list.player);
                 if (disconectedUserId == p.data.list.socketId) {
+                    if (p.data.list.player == "player1") {
+                        console.log("player1 userDisconnect");
+                        scoreTextP1.setText("");
+                    } else if (p.data.list.player == "player2") {
+                        console.log("player2 disconnect");
+                        scoreTextP2.setText("");
+                    } else if (p.data.list.player == "player3") {
+                        // console.log("player3 disconnect");
+                        scoreTextP3.setText("");
+                    } else if (p.data.list.player == "player4") {
+                        scoreTextP4.setText("");
+                    }
                     p.destroy();
                 }
             });
@@ -693,76 +692,6 @@
                 scoreTextP4.setText("P4: " + deadPlayer.data.lives);
             }
         });
-
-        // //////////// DYNAMIC SCOREBOARD ///////////////
-        if (
-            !oldPlayer1 &&
-            typeof player1 != "undefined" &&
-            player1.data &&
-            player1.data.list
-        ) {
-            scoreTextP1 = this.add.text(
-                40,
-                16,
-                "P1: " + player1.data.list.lives,
-                {
-                    fontSize: "22px",
-                    fill: "#000"
-                }
-            );
-            oldPlayer1 = player1;
-        }
-        if (
-            !oldPlayer2 &&
-            typeof player2 != "undefined" &&
-            player2.data &&
-            player2.data.list
-        ) {
-            scoreTextP2 = this.add.text(
-                200,
-                16,
-                "P2: " + player2.data.list.lives,
-                {
-                    fontSize: "22px",
-                    fill: "#000"
-                }
-            );
-            oldPlayer2 = player2;
-        }
-        if (
-            !oldPlayer3 &&
-            typeof player3 != "undefined" &&
-            player3.data &&
-            player3.data.list
-        ) {
-            scoreTextP3 = this.add.text(
-                360,
-                16,
-                "P3: " + player3.data.list.lives,
-                {
-                    fontSize: "22px",
-                    fill: "#000"
-                }
-            );
-            oldPlayer3 = player3;
-        }
-        if (
-            !oldPlayer4 &&
-            typeof player4 != "undefined" &&
-            player4.data &&
-            player4.data.list
-        ) {
-            scoreTextP4 = this.add.text(
-                520,
-                16,
-                "P4: " + player4.data.list.lives,
-                {
-                    fontSize: "22px",
-                    fill: "#000"
-                }
-            );
-            oldPlayer4 = player4;
-        }
 
         //////////// CHARACTER MOVEMENTS //////////////
         function characterMove(player) {
@@ -1519,7 +1448,6 @@
                         player: player.data.list.player,
                         lives: player.data.list.lives
                     });
-                    // scoreTextP4.setText("P4:" + player.data.list.lives);
                 }
             }
         }
@@ -1615,6 +1543,47 @@
                 rightHurt: false
             });
         window[curPlayer].body.setGravityY(300);
+        if (curPlayer == "player1") {
+            scoreTextP1 = self.add.text(
+                40,
+                16,
+                "P1: " + player1.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
+        } else if (curPlayer == "player2") {
+            scoreTextP2 = self.add.text(
+                200,
+                16,
+                "P2: " + player2.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
+        } else if (curPlayer == "player3") {
+            scoreTextP3 = self.add.text(
+                360,
+                16,
+                "P3: " + player3.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
+        } else if (curPlayer == "player4") {
+            scoreTextP4 = self.add.text(
+                520,
+                16,
+                "P4: " + player4.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
+        }
     }
 
     //PURPOSE: TO USE WITH SOCKET ANIMATIONS
