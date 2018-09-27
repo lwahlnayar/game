@@ -63,7 +63,6 @@ io.on("connection", function(socket) {
         // console.log("PLAYERS REMAINING ----------->", players);
         io.emit("userDisconnect", socket.id);
     });
-
     socket.on("playerMovement", function(movementData) {
         // console.log(movementData);
         players[socket.id].x = movementData.x;
@@ -71,6 +70,13 @@ io.on("connection", function(socket) {
         players[socket.id].data = movementData.data;
         // console.log("moving", players[socket.id]);
         socket.broadcast.emit("playerMoved", players[socket.id]);
+    });
+    socket.on("playerDamaged", function(damagedPlayer) {
+        var enemySocketId = damagedPlayer.enemyData.socketId;
+        players[enemySocketId].data = damagedPlayer.enemyData;
+        console.log(damagedPlayer);
+        // console.log("moving", players[socket.id]);
+        io.sockets.emit("damagedPlayer", players[enemySocketId]);
     });
     socket.on("playerDeath", function(player) {
         console.log("player which died->", player);

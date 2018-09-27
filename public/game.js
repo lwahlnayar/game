@@ -19,6 +19,7 @@
     };
 
     var game = new Phaser.Game(config);
+    var mainPlayerId;
     var borderLimitTop = -100;
     var borderLimitLeft = -100;
     var borderLimitRight = game.config.width + 100;
@@ -71,6 +72,8 @@
     function create() {
         var self = this;
         players = this.physics.add.group();
+        // self.physics.add.collider(players, players); //????
+
         this.socket = io(); //SOCKET ACTIVATED
 
         //ADD IMAGES, BACKGROUND, COLLIDERS
@@ -97,6 +100,8 @@
 
         //SOCKET LISTENERS
         this.socket.on("currentPlayers", function(players) {
+            // console.log("THIS player SOCKET", self.socket.id);
+            mainPlayerId = self.socket.id;
             Object.keys(players).forEach(function(id) {
                 setTimeout(function() {
                     addPlayers(self, players[id]);
@@ -122,7 +127,6 @@
                     } else if (playerInfo.playerNo == 4) {
                         count = 4;
                     }
-                    //set a dynamic number to concatenate to leftrun, etc
                     p.setPosition(playerInfo.x, playerInfo.y);
                     if (playerInfo.data.leftRun) {
                         p.anims.play("leftRun" + count, true);
@@ -148,6 +152,44 @@
                         p.anims.play("leftKick" + count, true);
                     } else if (playerInfo.data.rightKick) {
                         p.anims.play("rightKick" + count, true);
+                    }
+                }
+            });
+        });
+
+        this.socket.on("damagedPlayer", function(damagedPlayer) {
+            players.getChildren().forEach(function(p) {
+                if (damagedPlayer.socketId == p.data.list.socketId) {
+                    var count = "";
+                    // console.log("PLAYER FROM SOCKET -->", playerInfo);
+                    if (damagedPlayer.playerNo == 1) {
+                        // console.log("do nothing");
+                    } else if (damagedPlayer.playerNo == 2) {
+                        count = 2;
+                    } else if (damagedPlayer.playerNo == 3) {
+                        count = 3;
+                    } else if (damagedPlayer.playerNo == 4) {
+                        count = 4;
+                    }
+                    // p.setPosition(playerInfo.x, playerInfo.y);
+                    console.log(
+                        "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
+                        damagedPlayer
+                    );
+                    if (damagedPlayer.data.rightHurt) {
+                        p.anims.play("rightHurt" + count, true);
+                        p.setData({
+                            hp: damagedPlayer.data.hp,
+                            leftHurt: true,
+                            rightHurt: false
+                        });
+                    } else if (damagedPlayer.data.leftHurt) {
+                        p.anims.play("leftHurt" + count, true);
+                        p.setData({
+                            hp: damagedPlayer.data.hp,
+                            leftHurt: true,
+                            rightHurt: false
+                        });
                     }
                 }
             });
@@ -705,7 +747,10 @@
                         actionLeft: true
                     });
                     player.anims.play("leftPunch", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); //state on own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -713,6 +758,9 @@
                     });
                     player.anims.play("rightPunch", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (
                 (cursors.left.isDown && self.key_D.isDown) ||
@@ -725,6 +773,9 @@
                     });
                     player.anims.play("leftKick", true);
                     player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -732,6 +783,9 @@
                     });
                     player.anims.play("rightKick", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (cursors.left.isDown) {
                 if (player.body.touching.down) {
@@ -778,12 +832,18 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); //state on own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); //state on own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -791,6 +851,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightPunch", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -802,12 +865,18 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -815,6 +884,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightKick", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -879,7 +951,10 @@
                         actionLeft: true
                     });
                     player.anims.play("leftPunch2", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -887,6 +962,9 @@
                     });
                     player.anims.play("rightPunch2", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (
                 (cursors.left.isDown && self.key_D.isDown) ||
@@ -898,7 +976,10 @@
                         actionLeft: true
                     });
                     player.anims.play("leftKick2", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -906,6 +987,9 @@
                     });
                     player.anims.play("rightKick2", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (cursors.left.isDown) {
                 if (player.body.touching.down) {
@@ -950,12 +1034,18 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch2", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch2", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -963,6 +1053,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightPunch2", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -974,12 +1067,18 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick2", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick2", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -987,6 +1086,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightKick2", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1051,7 +1153,10 @@
                         actionLeft: true
                     });
                     player.anims.play("leftPunch3", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -1059,6 +1164,9 @@
                     });
                     player.anims.play("rightPunch3", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (
                 (cursors.left.isDown && self.key_D.isDown) ||
@@ -1070,7 +1178,10 @@
                         actionLeft: true
                     });
                     player.anims.play("leftKick3", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -1078,6 +1189,9 @@
                     });
                     player.anims.play("rightKick3", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (cursors.left.isDown) {
                 if (player.body.touching.down) {
@@ -1124,12 +1238,18 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch3", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch3", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1137,6 +1257,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightPunch3", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1148,12 +1271,18 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick3", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick3", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1161,6 +1290,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightKick3", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1225,7 +1357,10 @@
                         actionLeft: true
                     });
                     player.anims.play("leftPunch4", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -1233,6 +1368,9 @@
                     });
                     player.anims.play("rightPunch4", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (
                 (cursors.left.isDown && self.key_D.isDown) ||
@@ -1244,7 +1382,10 @@
                         actionLeft: true
                     });
                     player.anims.play("leftKick4", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -1252,6 +1393,9 @@
                     });
                     player.anims.play("rightKick4", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                 }
             } else if (cursors.left.isDown) {
                 if (player.body.touching.down) {
@@ -1298,12 +1442,18 @@
                 ) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch4", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch4", true);
-                    player.setData(leftPunchObj); //
+                    player.setData(leftPunchObj); // state of own player
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1311,6 +1461,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightPunch4", true);
                     player.setData(rightPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1326,13 +1479,19 @@
                             actionLeft: true
                         });
                         player.anims.play("leftKick4", true);
-                        player.setData(leftKickObj);
+                        player.setData(leftKickObj); //
+                        if (checkIfInRange().length > 0) {
+                            doDmgLeft(checkIfInRange(), self); //state on enemy player
+                        }
                     }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick4", true);
-                    player.setData(leftKickObj);
+                    player.setData(leftKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgLeft(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1340,6 +1499,9 @@
                     player.setData({ actionRight: true, actionLeft: false });
                     player.anims.play("rightKick4", true);
                     player.setData(rightKickObj); //
+                    if (checkIfInRange().length > 0) {
+                        doDmgRight(checkIfInRange(), self); //state on enemy player
+                    }
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
                     }
@@ -1502,7 +1664,7 @@
                 var data = player4.data.list;
                 self.socket.emit("playerMovement", { x, y, data });
             }
-        }, 50);
+        }, 80);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -1522,6 +1684,7 @@
             .setData({
                 alive: true,
                 lives: 5,
+                hp: 999,
                 jump: 0,
                 movedLeft: false,
                 movedRight: false,
@@ -1543,6 +1706,21 @@
                 rightHurt: false
             });
         window[curPlayer].body.setGravityY(300);
+
+        players.getChildren().forEach(function(p) {
+            if (p.data.list.player != curPlayer) {
+                self.physics.add.overlap(
+                    window[curPlayer],
+                    p,
+                    function() {
+                        // console.log("overlapping with player:", p);
+                    },
+                    null,
+                    self
+                );
+            }
+        });
+
         if (curPlayer == "player1") {
             scoreTextP1 = self.add.text(
                 40,
@@ -1607,5 +1785,57 @@
         };
         obj[keySearched] = true;
         return obj;
+    }
+
+    function checkIfInRange() {
+        var allPlayers = players.getChildren();
+        var nearbyEnemies = [];
+        allPlayers.forEach(function(p) {
+            if (p.data.list.socketId == mainPlayerId) {
+                var mainCoordinateX = p.x;
+                var mainCoordinateY = p.y;
+                for (var i = 0; i < allPlayers.length; i++) {
+                    if (allPlayers[i].data.list.socketId != mainPlayerId) {
+                        var distance = Phaser.Math.Distance.Between(
+                            mainCoordinateX,
+                            mainCoordinateY,
+                            allPlayers[i].x,
+                            allPlayers[i].y
+                        );
+                        if (distance <= 45) {
+                            var nearbyEnemy = allPlayers[i];
+                            nearbyEnemies.push(nearbyEnemy);
+                        }
+                    }
+                }
+            }
+        });
+        return nearbyEnemies;
+    }
+    function doDmgLeft(enemyArray, self) {
+        var dmgQuantity = Math.floor(Math.random() * 4) + 2;
+        enemyArray.forEach(function(enemy) {
+            var hp = enemy.data.list.hp - dmgQuantity;
+            var enemyData = {
+                socketId: enemy.data.list.socketId,
+                hp,
+                leftHurt: false,
+                rightHurt: true
+            };
+            self.socket.emit("playerDamaged", { enemyData });
+        });
+    }
+    function doDmgRight(enemyArray, self) {
+        var dmgQuantity = Math.floor(Math.random() * 4) + 2;
+        enemyArray.forEach(function(enemy) {
+            var hp = enemy.data.list.hp - dmgQuantity;
+            var enemyData = {
+                socketId: enemy.data.list.socketId,
+                hp,
+                leftHurt: true,
+                rightHurt: false
+            };
+            self.socket.emit("playerDamaged", { enemyData });
+        });
     }
 })(); // CLOSE IIFE
