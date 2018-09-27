@@ -161,6 +161,7 @@
             console.log("user disconnects!", disconectedUserId);
             players.getChildren().forEach(function(p) {
                 if (p.data.list.player == "player1") {
+                    console.log("im here!!!");
                     oldPlayer1 = null;
                 } else if (p.data.list.player == "player2") {
                     oldPlayer2 = null;
@@ -678,47 +679,88 @@
             Phaser.Input.Keyboard.KeyCodes.D
         );
 
-        this.socket.on("playerDied", function(deadPlayer) {
-            console.log("player dies!", deadPlayer.player, deadPlayer.lives);
+        this.socket.off("playerDied").on("playerDied", function(deadPlayer) {
             //fuq
-            if (deadPlayer.player == "player1") {
-                scoreTextP1.setText("P1:" + deadPlayer.lives);
-            } else if (deadPlayer.player == "player2") {
-                scoreTextP2.setText("P2:" + deadPlayer.lives);
-            } else if (deadPlayer.player == "player3") {
-                scoreTextP3.setText("P3:" + deadPlayer.lives);
-            } else if (deadPlayer.player == "player4") {
-                scoreTextP4.setText("P4:" + deadPlayer.lives);
+            console.log("DEADPLAYER", deadPlayer);
+            if (deadPlayer.data.player == "player1") {
+                console.log("PLAYER1");
+                scoreTextP1.setText("P1: " + deadPlayer.data.lives);
+            } else if (deadPlayer.data.player == "player2") {
+                scoreTextP2.setText("P2: " + deadPlayer.data.lives);
+            } else if (deadPlayer.data.player == "player3") {
+                scoreTextP3.setText("P3: " + deadPlayer.data.lives);
+            } else if (deadPlayer.data.player == "player4") {
+                scoreTextP4.setText("P4: " + deadPlayer.data.lives);
             }
         });
 
         // //////////// DYNAMIC SCOREBOARD ///////////////
-        if (!oldPlayer1 && typeof player1 != "undefined") {
-            scoreTextP1 = this.add.text(40, 16, "P1: 5", {
-                fontSize: "22px",
-                fill: "#000"
-            });
+        if (
+            !oldPlayer1 &&
+            typeof player1 != "undefined" &&
+            player1.data &&
+            player1.data.list
+        ) {
+            scoreTextP1 = this.add.text(
+                40,
+                16,
+                "P1: " + player1.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
             oldPlayer1 = player1;
         }
-        if (!oldPlayer2 && typeof player2 != "undefined") {
-            scoreTextP2 = this.add.text(200, 16, "P2: 5", {
-                fontSize: "22px",
-                fill: "#000"
-            });
+        if (
+            !oldPlayer2 &&
+            typeof player2 != "undefined" &&
+            player2.data &&
+            player2.data.list
+        ) {
+            scoreTextP2 = this.add.text(
+                200,
+                16,
+                "P2: " + player2.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
             oldPlayer2 = player2;
         }
-        if (!oldPlayer3 && typeof player3 != "undefined") {
-            scoreTextP3 = this.add.text(360, 16, "P3: 5", {
-                fontSize: "22px",
-                fill: "#000"
-            });
+        if (
+            !oldPlayer3 &&
+            typeof player3 != "undefined" &&
+            player3.data &&
+            player3.data.list
+        ) {
+            scoreTextP3 = this.add.text(
+                360,
+                16,
+                "P3: " + player3.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
             oldPlayer3 = player3;
         }
-        if (!oldPlayer4 && typeof player4 != "undefined") {
-            scoreTextP4 = this.add.text(520, 16, "P4: 5", {
-                fontSize: "22px",
-                fill: "#000"
-            });
+        if (
+            !oldPlayer4 &&
+            typeof player4 != "undefined" &&
+            player4.data &&
+            player4.data.list
+        ) {
+            scoreTextP4 = this.add.text(
+                520,
+                16,
+                "P4: " + player4.data.list.lives,
+                {
+                    fontSize: "22px",
+                    fill: "#000"
+                }
+            );
             oldPlayer4 = player4;
         }
 
@@ -1447,7 +1489,6 @@
                         player: player.data.list.player,
                         lives: player.data.list.lives
                     });
-                    // scoreTextP1.setText("P1:" + player.data.list.lives);
                 }
             } else if (player.data.list.player == "player2") {
                 if (!player.data.list.alive) {
@@ -1458,7 +1499,6 @@
                         player: player.data.list.player,
                         lives: player.data.list.lives
                     });
-                    // scoreTextP2.setText("P2:" + player.data.list.lives);
                 }
             } else if (player.data.list.player == "player3") {
                 if (!player.data.list.alive) {
@@ -1469,7 +1509,6 @@
                         player: player.data.list.player,
                         lives: player.data.list.lives
                     });
-                    // scoreTextP3.setText("P3:" + player.data.list.lives);
                 }
             } else if (player.data.list.player == "player4") {
                 if (!player.data.list.alive) {
@@ -1488,6 +1527,8 @@
         setTimeout(function() {
             if (
                 typeof player1 != "undefined" &&
+                player1.data &&
+                player1.data.list &&
                 self.socket.id == player1.data.list.socketId
             ) {
                 characterMove(player1);
@@ -1498,6 +1539,8 @@
                 self.socket.emit("playerMovement", { x, y, data });
             } else if (
                 typeof player2 != "undefined" &&
+                player2.data &&
+                player2.data.list &&
                 self.socket.id == player2.data.list.socketId
             ) {
                 characterMove2(player2);
@@ -1508,6 +1551,8 @@
                 self.socket.emit("playerMovement", { x, y, data });
             } else if (
                 typeof player3 != "undefined" &&
+                player3.data &&
+                player3.data.list &&
                 self.socket.id == player3.data.list.socketId
             ) {
                 characterMove3(player3);
@@ -1518,6 +1563,8 @@
                 self.socket.emit("playerMovement", { x, y, data });
             } else if (
                 typeof player4 != "undefined" &&
+                player4.data &&
+                player4.data.list &&
                 self.socket.id == player4.data.list.socketId
             ) {
                 characterMove4(player4);

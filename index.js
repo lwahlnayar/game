@@ -74,9 +74,7 @@ io.on("connection", function(socket) {
     });
     socket.on("playerDeath", function(player) {
         console.log("player which died->", player);
-        players[socket.id].player = player.player;
-        players[socket.id].lives = player.lives;
-        players[socket.id].socketId = socket.id;
+        players[socket.id].data.lives = player.lives;
         io.sockets.emit("playerDied", players[socket.id]);
     });
 });
