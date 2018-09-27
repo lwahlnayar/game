@@ -1748,7 +1748,7 @@
             .setScale(0.5, 0.5)
             .setData({
                 alive: true,
-                lives: 5,
+                lives: 8,
                 hp: 999,
                 jump: 0,
                 movedLeft: false,
