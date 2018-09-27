@@ -19,6 +19,7 @@
     };
 
     var game = new Phaser.Game(config);
+    var mainPlayerId;
     var borderLimitTop = -100;
     var borderLimitLeft = -100;
     var borderLimitRight = game.config.width + 100;
@@ -71,6 +72,8 @@
     function create() {
         var self = this;
         players = this.physics.add.group();
+        // self.physics.add.collider(players, players); //????
+
         this.socket = io(); //SOCKET ACTIVATED
 
         //ADD IMAGES, BACKGROUND, COLLIDERS
@@ -97,6 +100,8 @@
 
         //SOCKET LISTENERS
         this.socket.on("currentPlayers", function(players) {
+            // console.log("THIS player SOCKET", self.socket.id);
+            mainPlayerId = self.socket.id;
             Object.keys(players).forEach(function(id) {
                 setTimeout(function() {
                     addPlayers(self, players[id]);
@@ -122,7 +127,6 @@
                     } else if (playerInfo.playerNo == 4) {
                         count = 4;
                     }
-                    //set a dynamic number to concatenate to leftrun, etc
                     p.setPosition(playerInfo.x, playerInfo.y);
                     if (playerInfo.data.leftRun) {
                         p.anims.play("leftRun" + count, true);
@@ -706,6 +710,10 @@
                     });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        console.log("damage her baby");
+                        doDmg(checkIfInRange());
+                    }
                 } else if (player.data.list.actionRight) {
                     player.setData({
                         actionRight: true,
@@ -779,10 +787,18 @@
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //
+                    if (checkIfInRange().length > 0) {
+                        console.log("damage her baby");
+                        doDmg(checkIfInRange());
+                    }
                 }
                 if (player.data.list.actionLeft) {
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
+                    if (checkIfInRange().length > 0) {
+                        console.log("damage her baby");
+                        doDmg(checkIfInRange());
+                    }
                     player.setData(leftPunchObj); //
                     if (!cursors.right.isDown || !cursors.left.isDown) {
                         player.setVelocityX(0);
@@ -1502,7 +1518,7 @@
                 var data = player4.data.list;
                 self.socket.emit("playerMovement", { x, y, data });
             }
-        }, 50);
+        }, 80);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -1522,6 +1538,7 @@
             .setData({
                 alive: true,
                 lives: 5,
+                hp: 300,
                 jump: 0,
                 movedLeft: false,
                 movedRight: false,
@@ -1543,6 +1560,21 @@
                 rightHurt: false
             });
         window[curPlayer].body.setGravityY(300);
+
+        players.getChildren().forEach(function(p) {
+            if (p.data.list.player != curPlayer) {
+                self.physics.add.overlap(
+                    window[curPlayer],
+                    p,
+                    function() {
+                        // console.log("overlapping with player:", p);
+                    },
+                    null,
+                    self
+                );
+            }
+        });
+
         if (curPlayer == "player1") {
             scoreTextP1 = self.add.text(
                 40,
@@ -1607,5 +1639,39 @@
         };
         obj[keySearched] = true;
         return obj;
+    }
+
+    function checkIfInRange() {
+        var allPlayers = players.getChildren();
+        var nearbyEnemies = [];
+        allPlayers.forEach(function(p) {
+            if (p.data.list.socketId == mainPlayerId) {
+                var mainCoordinateX = p.x;
+                var mainCoordinateY = p.y;
+                for (var i = 0; i < allPlayers.length; i++) {
+                    if (allPlayers[i].data.list.socketId != mainPlayerId) {
+                        var distance = Phaser.Math.Distance.Between(
+                            mainCoordinateX,
+                            mainCoordinateY,
+                            allPlayers[i].x,
+                            allPlayers[i].y
+                        );
+                        if (distance <= 45) {
+                            var nearbyEnemy = allPlayers[i];
+                            nearbyEnemies.push(nearbyEnemy);
+                        }
+                    }
+                }
+            }
+        });
+        return nearbyEnemies;
+    }
+    function doDmg(enemyArray) {
+        var dmgQuantity = Math.floor(Math.random() * 4) + 2;
+        enemyArray.forEach(function(enemy) {
+            var hp = enemy.data.list.hp - dmgQuantity;
+            // console.log("remaining hp", enemy, hp);
+            enemy.setData({ hp: hp });
+        });
     }
 })(); // CLOSE IIFE
