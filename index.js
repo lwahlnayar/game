@@ -70,7 +70,11 @@ io.on("connection", function(socket) {
         players[socket.id].y = movementData.y;
         players[socket.id].data = movementData.data;
         // console.log("moving", players[socket.id]);
-        // // emit a message to all players about the player that moved
         socket.broadcast.emit("playerMoved", players[socket.id]);
+    });
+    socket.on("playerDeath", function(player) {
+        console.log("player which died->", player);
+        players[socket.id].data.lives = player.lives;
+        io.sockets.emit("playerDied", players[socket.id]);
     });
 });
