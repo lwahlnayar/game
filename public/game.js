@@ -789,13 +789,16 @@
             //fuq
             console.log("DEADPLAYER", deadPlayer);
             if (deadPlayer.data.player == "player1") {
-                console.log("PLAYER1");
+                player1.setData({ lives: deadPlayer.data.lives });
                 scoreTextP1.setText("P1: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player2") {
+                player2.setData({ lives: deadPlayer.data.lives });
                 scoreTextP2.setText("P2: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player3") {
+                player3.setData({ lives: deadPlayer.data.lives });
                 scoreTextP3.setText("P3: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player4") {
+                player4.setData({ lives: deadPlayer.data.lives });
                 scoreTextP4.setText("P4: " + deadPlayer.data.lives);
             }
         });
@@ -1643,7 +1646,8 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
                 }
             } else if (player.data.list.player == "player2") {
@@ -1653,7 +1657,8 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
                 }
             } else if (player.data.list.player == "player3") {
@@ -1663,7 +1668,8 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
                 }
             } else if (player.data.list.player == "player4") {
@@ -1673,7 +1679,8 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
                 }
             }
@@ -1772,18 +1779,22 @@
             });
         window[curPlayer].body.setGravityY(300);
 
-        players.getChildren().forEach(function(p) {
-            if (p.data.list.player != curPlayer) {
-                self.physics.add.overlap(
-                    window[curPlayer],
-                    p,
-                    function() {
-                        // console.log("overlapping with player:", p);
-                    },
-                    null,
-                    self
-                );
-            }
+        // players.getChildren().forEach(function(p) {
+        //     if (p.data.list.player != curPlayer) {
+        //         self.physics.add.overlap(
+        //             window[curPlayer],
+        //             p,
+        //             function() {
+        //                 // console.log("overlapping with player:", p);
+        //             },
+        //             null,
+        //             self
+        //         );
+        //     }
+        // });
+
+        self.socket.on("allPlayersData", function(players) {
+            console.log("ALL PLAYER DATA, check up to date lives", players);
         });
 
         if (curPlayer == "player1") {
