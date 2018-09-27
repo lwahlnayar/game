@@ -92,7 +92,7 @@
             .refreshBody();
 
         clouds
-            .create(540, 140, "cloud")
+            .create(500, 150, "cloud")
             .setScale(1)
             .refreshBody();
 
@@ -182,32 +182,36 @@
                             player1.data.list &&
                             player1.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player1.data.list.hp;
                             player1.setVelocityY(-100);
-                            player1.setVelocityX(-150);
+                            player1.setVelocityX(-150 - diff);
                         } else if (
                             typeof player2 != "undefined" &&
                             player2.data &&
                             player2.data.list &&
                             player2.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player2.data.list.hp;
                             player2.setVelocityY(-100);
-                            player2.setVelocityX(-150);
+                            player2.setVelocityX(-150 - diff);
                         } else if (
                             typeof player3 != "undefined" &&
                             player3.data &&
                             player3.data.list &&
                             player3.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player3.data.list.hp;
                             player3.setVelocityY(-100);
-                            player3.setVelocityX(-150);
+                            player3.setVelocityX(-150 - diff);
                         } else if (
                             typeof player4 != "undefined" &&
                             player4.data &&
                             player4.data.list &&
                             player4.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player4.data.list.hp;
                             player4.setVelocityY(-100);
-                            player4.setVelocityX(-150);
+                            player4.setVelocityX(-150 - diff);
                         }
                         p.anims.play("rightHurt" + count, true);
                         p.setData({
@@ -222,32 +226,36 @@
                             player1.data.list &&
                             player1.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player1.data.list.hp;
                             player1.setVelocityY(-100);
-                            player1.setVelocityX(+150);
+                            player1.setVelocityX(+150 + diff);
                         } else if (
                             typeof player2 != "undefined" &&
                             player2.data &&
                             player2.data.list &&
                             player2.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player2.data.list.hp;
                             player2.setVelocityY(-100);
-                            player2.setVelocityX(+150);
+                            player2.setVelocityX(+150 + diff);
                         } else if (
                             typeof player3 != "undefined" &&
                             player3.data &&
                             player3.data.list &&
                             player3.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player3.data.list.hp;
                             player3.setVelocityY(-100);
-                            player3.setVelocityX(+150);
+                            player3.setVelocityX(+150 + diff);
                         } else if (
                             typeof player4 != "undefined" &&
                             player4.data &&
                             player4.data.list &&
                             player4.data.list.socketId == damagedPlayer.socketId
                         ) {
+                            var diff = 999 - player4.data.list.hp;
                             player4.setVelocityY(-100);
-                            player4.setVelocityX(+150);
+                            player4.setVelocityX(+150 + diff);
                         }
                         p.anims.play("leftHurt" + count, true);
                         p.setData({
@@ -789,16 +797,16 @@
             //fuq
             console.log("DEADPLAYER", deadPlayer);
             if (deadPlayer.data.player == "player1") {
-                player1.setData({ lives: deadPlayer.data.lives });
+                player1.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP1.setText("P1: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player2") {
-                player2.setData({ lives: deadPlayer.data.lives });
+                player2.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP2.setText("P2: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player3") {
-                player3.setData({ lives: deadPlayer.data.lives });
+                player3.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP3.setText("P3: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player4") {
-                player4.setData({ lives: deadPlayer.data.lives });
+                player4.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP4.setText("P4: " + deadPlayer.data.lives);
             }
         });
@@ -1649,6 +1657,9 @@
                         lives: player.data.list.lives,
                         allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player1.destroy();
+                    }
                 }
             } else if (player.data.list.player == "player2") {
                 if (!player.data.list.alive) {
@@ -1660,6 +1671,9 @@
                         lives: player.data.list.lives,
                         allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player2.destroy();
+                    }
                 }
             } else if (player.data.list.player == "player3") {
                 if (!player.data.list.alive) {
@@ -1671,6 +1685,9 @@
                         lives: player.data.list.lives,
                         allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player3.destroy();
+                    }
                 }
             } else if (player.data.list.player == "player4") {
                 if (!player.data.list.alive) {
@@ -1682,6 +1699,9 @@
                         lives: player.data.list.lives,
                         allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player4.destroy();
+                    }
                 }
             }
         }
@@ -1792,10 +1812,6 @@
         //         );
         //     }
         // });
-
-        self.socket.on("allPlayersData", function(players) {
-            console.log("ALL PLAYER DATA, check up to date lives", players);
-        });
 
         if (curPlayer == "player1") {
             scoreTextP1 = self.add.text(
