@@ -79,8 +79,11 @@ io.on("connection", function(socket) {
         io.sockets.emit("damagedPlayer", players[enemySocketId]);
     });
     socket.on("playerDeath", function(player) {
-        console.log("player which died->", player);
+        // console.log("player which died->", player);
         players[socket.id].data.lives = player.lives;
         io.sockets.emit("playerDied", players[socket.id]);
+    });
+    socket.on("allPlayerData", function(allPlayers) {
+        io.sockets.emit("allPlayers", allPlayers);
     });
 });

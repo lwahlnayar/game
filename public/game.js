@@ -87,13 +87,13 @@
 
         clouds = this.physics.add.staticGroup();
         clouds
-            .create(25, 150, "cloud")
+            .create(25, 120, "cloud")
             .setScale(1.5)
             .refreshBody();
 
         clouds
-            .create(150, 450, "cloud")
-            .setScale(1.5)
+            .create(500, 150, "cloud")
+            .setScale(1)
             .refreshBody();
 
         self.physics.add.collider(players, clouds);
@@ -171,12 +171,48 @@
                     } else if (damagedPlayer.playerNo == 4) {
                         count = 4;
                     }
-                    // p.setPosition(playerInfo.x, playerInfo.y);
                     console.log(
                         "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
                         damagedPlayer
                     );
                     if (damagedPlayer.data.rightHurt) {
+                        if (
+                            typeof player1 != "undefined" &&
+                            player1.data &&
+                            player1.data.list &&
+                            player1.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player1.data.list.hp;
+                            player1.setVelocityY(-100);
+                            player1.setVelocityX(-150 - diff);
+                        } else if (
+                            typeof player2 != "undefined" &&
+                            player2.data &&
+                            player2.data.list &&
+                            player2.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player2.data.list.hp;
+                            player2.setVelocityY(-100);
+                            player2.setVelocityX(-150 - diff);
+                        } else if (
+                            typeof player3 != "undefined" &&
+                            player3.data &&
+                            player3.data.list &&
+                            player3.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player3.data.list.hp;
+                            player3.setVelocityY(-100);
+                            player3.setVelocityX(-150 - diff);
+                        } else if (
+                            typeof player4 != "undefined" &&
+                            player4.data &&
+                            player4.data.list &&
+                            player4.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player4.data.list.hp;
+                            player4.setVelocityY(-100);
+                            player4.setVelocityX(-150 - diff);
+                        }
                         p.anims.play("rightHurt" + count, true);
                         p.setData({
                             hp: damagedPlayer.data.hp,
@@ -184,6 +220,43 @@
                             rightHurt: false
                         });
                     } else if (damagedPlayer.data.leftHurt) {
+                        if (
+                            typeof player1 != "undefined" &&
+                            player1.data &&
+                            player1.data.list &&
+                            player1.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player1.data.list.hp;
+                            player1.setVelocityY(-100);
+                            player1.setVelocityX(+150 + diff);
+                        } else if (
+                            typeof player2 != "undefined" &&
+                            player2.data &&
+                            player2.data.list &&
+                            player2.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player2.data.list.hp;
+                            player2.setVelocityY(-100);
+                            player2.setVelocityX(+150 + diff);
+                        } else if (
+                            typeof player3 != "undefined" &&
+                            player3.data &&
+                            player3.data.list &&
+                            player3.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player3.data.list.hp;
+                            player3.setVelocityY(-100);
+                            player3.setVelocityX(+150 + diff);
+                        } else if (
+                            typeof player4 != "undefined" &&
+                            player4.data &&
+                            player4.data.list &&
+                            player4.data.list.socketId == damagedPlayer.socketId
+                        ) {
+                            var diff = 999 - player4.data.list.hp;
+                            player4.setVelocityY(-100);
+                            player4.setVelocityX(+150 + diff);
+                        }
                         p.anims.play("leftHurt" + count, true);
                         p.setData({
                             hp: damagedPlayer.data.hp,
@@ -724,13 +797,16 @@
             //fuq
             console.log("DEADPLAYER", deadPlayer);
             if (deadPlayer.data.player == "player1") {
-                console.log("PLAYER1");
+                player1.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP1.setText("P1: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player2") {
+                player2.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP2.setText("P2: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player3") {
+                player3.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP3.setText("P3: " + deadPlayer.data.lives);
             } else if (deadPlayer.data.player == "player4") {
+                player4.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP4.setText("P4: " + deadPlayer.data.lives);
             }
         });
@@ -1578,8 +1654,12 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player1.destroy();
+                    }
                 }
             } else if (player.data.list.player == "player2") {
                 if (!player.data.list.alive) {
@@ -1588,8 +1668,12 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player2.destroy();
+                    }
                 }
             } else if (player.data.list.player == "player3") {
                 if (!player.data.list.alive) {
@@ -1598,8 +1682,12 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player3.destroy();
+                    }
                 }
             } else if (player.data.list.player == "player4") {
                 if (!player.data.list.alive) {
@@ -1608,8 +1696,12 @@
                     player.setData({ alive: true, lives: lives });
                     self.socket.emit("playerDeath", {
                         player: player.data.list.player,
-                        lives: player.data.list.lives
+                        lives: player.data.list.lives,
+                        allPlayers: players.getChildren()
                     });
+                    if (lives == 0) {
+                        player4.destroy();
+                    }
                 }
             }
         }
@@ -1683,7 +1775,7 @@
             .setScale(0.5, 0.5)
             .setData({
                 alive: true,
-                lives: 5,
+                lives: 8,
                 hp: 999,
                 jump: 0,
                 movedLeft: false,
@@ -1707,19 +1799,19 @@
             });
         window[curPlayer].body.setGravityY(300);
 
-        players.getChildren().forEach(function(p) {
-            if (p.data.list.player != curPlayer) {
-                self.physics.add.overlap(
-                    window[curPlayer],
-                    p,
-                    function() {
-                        // console.log("overlapping with player:", p);
-                    },
-                    null,
-                    self
-                );
-            }
-        });
+        // players.getChildren().forEach(function(p) {
+        //     if (p.data.list.player != curPlayer) {
+        //         self.physics.add.overlap(
+        //             window[curPlayer],
+        //             p,
+        //             function() {
+        //                 // console.log("overlapping with player:", p);
+        //             },
+        //             null,
+        //             self
+        //         );
+        //     }
+        // });
 
         if (curPlayer == "player1") {
             scoreTextP1 = self.add.text(
