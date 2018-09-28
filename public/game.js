@@ -24,6 +24,7 @@
     var borderLimitLeft = -100;
     var borderLimitRight = game.config.width + 100;
     var borderLimitBot = game.config.height + 100;
+    var downFlag;
 
     function preload() {
         this.load.image("sky", "assets/sky2.jpg");
@@ -63,6 +64,15 @@
             frameWidth: 80,
             frameHeight: 110
         });
+        this.load.audio("backgroundSound", "/assets/Audio/MOUSE FAN CLUB.mp3");
+        this.load.audio(
+            "actionSound",
+            "assets/Audio/action-_audiotrimmer.com_.mp3"
+        );
+        this.load.image("p1", "assets/headshots/p1.png");
+        this.load.image("p2", "assets/headshots/p2.png");
+        this.load.image("p3", "assets/headshots/p3.png");
+        this.load.image("p4", "assets/headshots/p4.png");
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -71,8 +81,16 @@
 
     function create() {
         var self = this;
+        var image1;
+        var image2;
+        var image3;
+        var image4;
         players = this.physics.add.group();
-        // self.physics.add.collider(players, players); //????
+        // var backgroundSound = this.sound.add("backgroundSound", {
+        //     loop: true
+        // });
+
+        // backgroundSound.play();
 
         this.socket = io(); //SOCKET ACTIVATED
 
@@ -268,6 +286,11 @@
             });
         });
 
+        // this.socket.on("soundMade", function(sound) {
+        //     console.log("boom!");
+        //
+        // });
+
         this.socket.on("userDisconnect", function(disconectedUserId) {
             console.log("user disconnects!", disconectedUserId);
             players.getChildren().forEach(function(p) {
@@ -276,14 +299,18 @@
                     if (p.data.list.player == "player1") {
                         console.log("player1 userDisconnect");
                         scoreTextP1.setText("");
+                        this.image1.destroy();
                     } else if (p.data.list.player == "player2") {
                         console.log("player2 disconnect");
                         scoreTextP2.setText("");
+                        this.image2.destroy();
                     } else if (p.data.list.player == "player3") {
                         // console.log("player3 disconnect");
                         scoreTextP3.setText("");
+                        this.image3.destroy();
                     } else if (p.data.list.player == "player4") {
                         scoreTextP4.setText("");
+                        this.image4.destroy();
                     }
                     p.destroy();
                 }
@@ -793,6 +820,15 @@
             Phaser.Input.Keyboard.KeyCodes.D
         );
 
+        if (self.key_A.isDown || self.key_D.isDown) {
+            downFlag = true;
+        } else {
+            if (downFlag == true) {
+                downFlag = false;
+                game.sound.play("actionSound");
+            }
+        }
+
         this.socket.off("playerDied").on("playerDied", function(deadPlayer) {
             //fuq
             console.log("DEADPLAYER", deadPlayer);
@@ -824,6 +860,7 @@
                     });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //state on own player
+                    // makeSound(self);
                     if (checkIfInRange().length > 0) {
                         doDmgLeft(checkIfInRange(), self); //state on enemy player
                     }
@@ -909,6 +946,7 @@
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //state on own player
+                    // makeSound(self);
                     if (checkIfInRange().length > 0) {
                         doDmgLeft(checkIfInRange(), self); //state on enemy player
                     }
@@ -917,6 +955,7 @@
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //state on own player
+                    // makeSound(self);
                     if (checkIfInRange().length > 0) {
                         doDmgLeft(checkIfInRange(), self); //state on enemy player
                     }
@@ -1799,58 +1838,52 @@
             });
         window[curPlayer].body.setGravityY(300);
 
-        // players.getChildren().forEach(function(p) {
-        //     if (p.data.list.player != curPlayer) {
-        //         self.physics.add.overlap(
-        //             window[curPlayer],
-        //             p,
-        //             function() {
-        //                 // console.log("overlapping with player:", p);
-        //             },
-        //             null,
-        //             self
-        //         );
-        //     }
-        // });
-
         if (curPlayer == "player1") {
+            image1 = self.add.image(70, 325, "p1").setScale(0.9);
             scoreTextP1 = self.add.text(
-                40,
-                16,
+                95,
+                318,
                 "P1: " + player1.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#b12f25",
+                    strokeThickness: "5"
                 }
             );
         } else if (curPlayer == "player2") {
+            image2 = self.add.image(210, 325, "p2").setScale(0.9);
             scoreTextP2 = self.add.text(
-                200,
-                16,
+                230,
+                318,
                 "P2: " + player2.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#d67d29",
+                    strokeThickness: "5"
                 }
             );
         } else if (curPlayer == "player3") {
+            image3 = self.add.image(340, 325, "p3").setScale(0.9);
             scoreTextP3 = self.add.text(
-                360,
-                16,
+                370,
+                318,
                 "P3: " + player3.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#2931d6",
+                    strokeThickness: "5"
                 }
             );
         } else if (curPlayer == "player4") {
+            image4 = self.add.image(480, 325, "p4").setScale(0.9);
             scoreTextP4 = self.add.text(
-                520,
-                16,
+                500,
+                318,
                 "P4: " + player4.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#347628",
+                    strokeThickness: "5"
                 }
             );
         }
@@ -1930,4 +1963,12 @@
             self.socket.emit("playerDamaged", { enemyData });
         });
     }
+    function setFriction(player, platform) {
+        if (platform.key === "ice-platform") {
+            player.body.x -= platform.body.x - platform.body.prev.x;
+        }
+    }
+    // function makeSound(self) {
+    //     self.socket.emit("sound", "anysound");
+    // }
 })(); // CLOSE IIFE

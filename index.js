@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const server = require("http").Server(app);
-const io = require("socket.io")(server, { origins: "localhost:8080" });
+const io = require("socket.io")(server, {});
 var players = {};
 var playerCount = 0;
 
@@ -86,4 +86,7 @@ io.on("connection", function(socket) {
     socket.on("allPlayerData", function(allPlayers) {
         io.sockets.emit("allPlayers", allPlayers);
     });
+    // socket.on("sound", function(allPlayers) {
+    //     io.sockets.emit("soundMade", "sound");
+    // });
 });
