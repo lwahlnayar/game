@@ -30,7 +30,6 @@
         this.load.image("sky", "assets/sky2.jpg");
         this.load.image("ground", "assets/platform2.png");
         this.load.image("cloud", "assets/cloud.png");
-
         this.load.spritesheet("rightplayer1", "assets/rightplayer1.png", {
             frameWidth: 80,
             frameHeight: 110
@@ -73,6 +72,10 @@
         this.load.image("p2", "assets/headshots/p2.png");
         this.load.image("p3", "assets/headshots/p3.png");
         this.load.image("p4", "assets/headshots/p4.png");
+        this.load.image("p1dead", "assets/headshots/p1dead.png");
+        this.load.image("p2dead", "assets/headshots/p2dead.png");
+        this.load.image("p3dead", "assets/headshots/p3dead.png");
+        this.load.image("p4dead", "assets/headshots/p4dead.png");
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +88,11 @@
         var image2;
         var image3;
         var image4;
+        var image1dead;
+        var image2dead;
+        var image3dead;
+        var image4dead;
+
         players = this.physics.add.group();
         // var backgroundSound = this.sound.add("backgroundSound", {
         //     loop: true
@@ -286,13 +294,21 @@
             });
         });
 
-        // this.socket.on("soundMade", function(sound) {
-        //     console.log("boom!");
-        //
-        // });
+        this.socket.on("gameEnd", function(player) {
+            if (player.player == "player1") {
+                self.add.image(70, 325, "p1dead").setScale(0.9);
+            } else if (player.player == "player2") {
+                self.add.image(210, 325, "p2dead").setScale(0.9);
+            } else if (player.player == "player3") {
+                self.add.image(340, 325, "p3dead").setScale(0.9);
+            } else if (player.player == "player4") {
+                self.add.image(480, 325, "p4dead").setScale(0.9);
+            }
+        });
 
         this.socket.on("userDisconnect", function(disconectedUserId) {
             console.log("user disconnects!", disconectedUserId);
+            console.log("IMAGE DEAD 1", self.image1dead);
             players.getChildren().forEach(function(p) {
                 // console.log("p.data.list.player", p.data.list.player);
                 if (disconectedUserId == p.data.list.socketId) {
@@ -1697,6 +1713,12 @@
                         allPlayers: players.getChildren()
                     });
                     if (lives == 0) {
+                        image1dead = self.add
+                            .image(70, 325, "p1dead")
+                            .setScale(0.9);
+                        self.socket.emit("gameOver", {
+                            player: player1.data.list.player
+                        });
                         player1.destroy();
                     }
                 }
@@ -1710,7 +1732,14 @@
                         lives: player.data.list.lives,
                         allPlayers: players.getChildren()
                     });
+                    image2dead = self.add
+                        .image(210, 325, "p2dead")
+                        .setScale(0.9);
+
                     if (lives == 0) {
+                        self.socket.emit("gameOver", {
+                            player: player2.data.list.player
+                        });
                         player2.destroy();
                     }
                 }
@@ -1725,6 +1754,12 @@
                         allPlayers: players.getChildren()
                     });
                     if (lives == 0) {
+                        image3dead = self.add
+                            .image(340, 325, "p3dead")
+                            .setScale(0.9);
+                        self.socket.emit("gameOver", {
+                            player: player3.data.list.player
+                        });
                         player3.destroy();
                     }
                 }
@@ -1739,6 +1774,12 @@
                         allPlayers: players.getChildren()
                     });
                     if (lives == 0) {
+                        image4dead = self.add
+                            .image(480, 325, "p4dead")
+                            .setScale(0.9);
+                        self.socket.emit("gameOver", {
+                            player: player4.data.list.player
+                        });
                         player4.destroy();
                     }
                 }
@@ -1814,7 +1855,7 @@
             .setScale(0.5, 0.5)
             .setData({
                 alive: true,
-                lives: 8,
+                lives: 1,
                 hp: 999,
                 jump: 0,
                 movedLeft: false,

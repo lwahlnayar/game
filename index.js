@@ -86,7 +86,8 @@ io.on("connection", function(socket) {
     socket.on("allPlayerData", function(allPlayers) {
         io.sockets.emit("allPlayers", allPlayers);
     });
-    // socket.on("sound", function(allPlayers) {
-    //     io.sockets.emit("soundMade", "sound");
-    // });
+    socket.on("gameOver", function(player) {
+        console.log(player);
+        io.sockets.emit("gameEnd", player);
+    });
 });
