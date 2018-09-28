@@ -20,6 +20,7 @@
 
     var game = new Phaser.Game(config);
     var mainPlayerId;
+    var mainPlayerNo;
     var borderLimitTop = -100;
     var borderLimitLeft = -100;
     var borderLimitRight = game.config.width + 100;
@@ -94,11 +95,11 @@
         var image4dead;
 
         players = this.physics.add.group();
-        // var backgroundSound = this.sound.add("backgroundSound", {
-        //     loop: true
-        // });
+        var backgroundSound = this.sound.add("backgroundSound", {
+            loop: true
+        });
 
-        // backgroundSound.play();
+        backgroundSound.play();
 
         this.socket = io(); //SOCKET ACTIVATED
 
@@ -127,10 +128,30 @@
         //SOCKET LISTENERS
         this.socket.on("currentPlayers", function(players) {
             // console.log("THIS player SOCKET", self.socket.id);
+            console.log("SOCKET TO WHICH PLAYER", players);
             mainPlayerId = self.socket.id;
             Object.keys(players).forEach(function(id) {
                 setTimeout(function() {
                     addPlayers(self, players[id]);
+                    if (self.socket.id == id) {
+                        if (players[id].playerNo === 1) {
+                            jumpListener(player1);
+                            punchListener(player1);
+                            kickListener(player1);
+                        } else if (players[id].playerNo === 2) {
+                            jumpListener(player2);
+                            punchListener(player2);
+                            kickListener(player2);
+                        } else if (players[id].playerNo === 3) {
+                            jumpListener(player3);
+                            punchListener(player3);
+                            kickListener(player3);
+                        } else if (players[id].playerNo === 4) {
+                            jumpListener(player4);
+                            punchListener(player4);
+                            kickListener(player4);
+                        }
+                    }
                 }, 50);
             });
         });
@@ -197,10 +218,10 @@
                     } else if (damagedPlayer.playerNo == 4) {
                         count = 4;
                     }
-                    console.log(
-                        "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
-                        damagedPlayer
-                    );
+                    // console.log(
+                    //     "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
+                    //     damagedPlayer
+                    // );
                     if (damagedPlayer.data.rightHurt) {
                         if (
                             typeof player1 != "undefined" &&
@@ -773,37 +794,37 @@
             });
         } //CLOSE KICK FUNCTION
 
-        setTimeout(function() {
-            if (
-                typeof player1 != "undefined" &&
-                self.socket.id == player1.data.list.socketId
-            ) {
-                jumpListener(player1);
-                punchListener(player1);
-                kickListener(player1);
-            } else if (
-                typeof player2 != "undefined" &&
-                self.socket.id == player2.data.list.socketId
-            ) {
-                jumpListener(player2);
-                punchListener(player2);
-                kickListener(player2);
-            } else if (
-                typeof player3 != "undefined" &&
-                self.socket.id == player3.data.list.socketId
-            ) {
-                jumpListener(player3);
-                punchListener(player3);
-                kickListener(player3);
-            } else if (
-                typeof player4 != "undefined" &&
-                self.socket.id == player4.data.list.socketId
-            ) {
-                jumpListener(player4);
-                punchListener(player4);
-                kickListener(player4);
-            }
-        }, 100);
+        // setTimeout(function() {
+        //     if (
+        //         typeof player1 != "undefined" &&
+        //         self.socket.id == player1.data.list.socketId
+        //     ) {
+        //         jumpListener(player1);
+        //         punchListener(player1);
+        //         kickListener(player1);
+        //     } else if (
+        //         typeof player2 != "undefined" &&
+        //         self.socket.id == player2.data.list.socketId
+        //     ) {
+        //         jumpListener(player2);
+        //         punchListener(player2);
+        //         kickListener(player2);
+        //     } else if (
+        //         typeof player3 != "undefined" &&
+        //         self.socket.id == player3.data.list.socketId
+        //     ) {
+        //         jumpListener(player3);
+        //         punchListener(player3);
+        //         kickListener(player3);
+        //     } else if (
+        //         typeof player4 != "undefined" &&
+        //         self.socket.id == player4.data.list.socketId
+        //     ) {
+        //         jumpListener(player4);
+        //         punchListener(player4);
+        //         kickListener(player4);
+        //     }
+        // }, 80);
     } //CLOSES CREATE FUNCTION
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -847,7 +868,6 @@
 
         this.socket.off("playerDied").on("playerDied", function(deadPlayer) {
             //fuq
-            console.log("DEADPLAYER", deadPlayer);
             if (deadPlayer.data.player == "player1") {
                 player1.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP1.setText("P1: " + deadPlayer.data.lives);
@@ -1732,11 +1752,10 @@
                         lives: player.data.list.lives,
                         allPlayers: players.getChildren()
                     });
-                    image2dead = self.add
-                        .image(210, 325, "p2dead")
-                        .setScale(0.9);
-
                     if (lives == 0) {
+                        image2dead = self.add
+                            .image(210, 325, "p2dead")
+                            .setScale(0.9);
                         self.socket.emit("gameOver", {
                             player: player2.data.list.player
                         });
@@ -1846,6 +1865,7 @@
     //ADD PLAYERS
     function addPlayers(self, playerInfo) {
         var curPlayer = "player" + playerInfo.playerNo;
+        mainPlayerNo = curPlayer;
         window[curPlayer] = players
             .create(
                 playerInfo.x,
