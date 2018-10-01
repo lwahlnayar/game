@@ -33,6 +33,13 @@
     var rightHurt = {};
 
     function preload() {
+        this.load.audio("backgroundSound", "/assets/Audio/MOUSE FAN CLUB.mp3");
+        this.load.audio(
+            "actionSound",
+            "assets/Audio/118513__thefsoundman__punch-02.mp3"
+        );
+
+        this.load.audio("oneSound", "assets/Audio/1.ogg");
         this.load.image("sky", "assets/sky2.jpg");
         this.load.image("ground", "assets/platform2.png");
         this.load.image("cloud", "assets/cloud.png");
@@ -77,6 +84,11 @@
     ///////////////////////////////////////////////////////////////////////////////////
 
     function create() {
+        var backgroundSound = this.sound.add("backgroundSound", {
+            loop: true
+        });
+
+        backgroundSound.play();
         var self = this;
         players = this.physics.add.group();
         this.socket = io(); //SOCKET ACTIVATED
@@ -812,11 +824,13 @@
         }
 
         //////////// CHARACTER MOVEMENTS //////////////
+        var actionSound = this.sound.add("actionSound");
         function characterMove(player) {
             if (
                 (cursors.left.isDown && self.key_A.isDown) ||
                 (cursors.right.isDown && self.key_A.isDown)
             ) {
+                actionSound.play();
                 if (player.data.list.actionLeft) {
                     player.setData({
                         actionRight: false,
@@ -860,6 +874,7 @@
                 (cursors.left.isDown && self.key_D.isDown) ||
                 (cursors.right.isDown && self.key_D.isDown)
             ) {
+                actionSound.play();
                 if (player.data.list.actionLeft) {
                     player.setData({
                         actionRight: false,
@@ -948,6 +963,7 @@
                     !player.data.list.actionLeft &&
                     !player.data.list.actionRight
                 ) {
+                    actionSound.play();
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
                     player.setData({
@@ -1005,6 +1021,7 @@
                     !player.data.list.actionLeft &&
                     !player.data.list.actionRight
                 ) {
+                    actionSound.play();
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftKick", true);
                     // checkForSucessHit(player, rightHurt);
