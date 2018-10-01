@@ -20,16 +20,17 @@
 
     var game = new Phaser.Game(config);
     var mainPlayerId;
+    var mainPlayerNo;
     var borderLimitTop = -100;
     var borderLimitLeft = -100;
     var borderLimitRight = game.config.width + 100;
     var borderLimitBot = game.config.height + 100;
+    var downFlag;
 
     function preload() {
         this.load.image("sky", "assets/sky2.jpg");
         this.load.image("ground", "assets/platform2.png");
         this.load.image("cloud", "assets/cloud.png");
-
         this.load.spritesheet("rightplayer1", "assets/rightplayer1.png", {
             frameWidth: 80,
             frameHeight: 110
@@ -63,6 +64,19 @@
             frameWidth: 80,
             frameHeight: 110
         });
+        this.load.audio("backgroundSound", "/assets/Audio/MOUSE FAN CLUB.mp3");
+        this.load.audio(
+            "actionSound",
+            "assets/Audio/action-_audiotrimmer.com_.mp3"
+        );
+        this.load.image("p1", "assets/headshots/p1.png");
+        this.load.image("p2", "assets/headshots/p2.png");
+        this.load.image("p3", "assets/headshots/p3.png");
+        this.load.image("p4", "assets/headshots/p4.png");
+        this.load.image("p1dead", "assets/headshots/p1dead.png");
+        this.load.image("p2dead", "assets/headshots/p2dead.png");
+        this.load.image("p3dead", "assets/headshots/p3dead.png");
+        this.load.image("p4dead", "assets/headshots/p4dead.png");
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -71,8 +85,21 @@
 
     function create() {
         var self = this;
+        var image1;
+        var image2;
+        var image3;
+        var image4;
+        var image1dead;
+        var image2dead;
+        var image3dead;
+        var image4dead;
+
         players = this.physics.add.group();
-        // self.physics.add.collider(players, players); //????
+        var backgroundSound = this.sound.add("backgroundSound", {
+            loop: true
+        });
+
+        backgroundSound.play();
 
         this.socket = io(); //SOCKET ACTIVATED
 
@@ -101,10 +128,30 @@
         //SOCKET LISTENERS
         this.socket.on("currentPlayers", function(players) {
             // console.log("THIS player SOCKET", self.socket.id);
+            console.log("SOCKET TO WHICH PLAYER", players);
             mainPlayerId = self.socket.id;
             Object.keys(players).forEach(function(id) {
                 setTimeout(function() {
                     addPlayers(self, players[id]);
+                    if (self.socket.id == id) {
+                        if (players[id].playerNo === 1) {
+                            jumpListener(player1);
+                            punchListener(player1);
+                            kickListener(player1);
+                        } else if (players[id].playerNo === 2) {
+                            jumpListener(player2);
+                            punchListener(player2);
+                            kickListener(player2);
+                        } else if (players[id].playerNo === 3) {
+                            jumpListener(player3);
+                            punchListener(player3);
+                            kickListener(player3);
+                        } else if (players[id].playerNo === 4) {
+                            jumpListener(player4);
+                            punchListener(player4);
+                            kickListener(player4);
+                        }
+                    }
                 }, 50);
             });
         });
@@ -171,10 +218,10 @@
                     } else if (damagedPlayer.playerNo == 4) {
                         count = 4;
                     }
-                    console.log(
-                        "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
-                        damagedPlayer
-                    );
+                    // console.log(
+                    //     "A PLAYER GOT DAMAGED! SHARING WITH EVERYONE ->",
+                    //     damagedPlayer
+                    // );
                     if (damagedPlayer.data.rightHurt) {
                         if (
                             typeof player1 != "undefined" &&
@@ -268,22 +315,39 @@
             });
         });
 
+        this.socket.on("gameEnd", function(player) {
+            if (player.player == "player1") {
+                self.add.image(70, 325, "p1dead").setScale(0.9);
+            } else if (player.player == "player2") {
+                self.add.image(210, 325, "p2dead").setScale(0.9);
+            } else if (player.player == "player3") {
+                self.add.image(340, 325, "p3dead").setScale(0.9);
+            } else if (player.player == "player4") {
+                self.add.image(480, 325, "p4dead").setScale(0.9);
+            }
+        });
+
         this.socket.on("userDisconnect", function(disconectedUserId) {
             console.log("user disconnects!", disconectedUserId);
+            console.log("IMAGE DEAD 1", self.image1dead);
             players.getChildren().forEach(function(p) {
                 // console.log("p.data.list.player", p.data.list.player);
                 if (disconectedUserId == p.data.list.socketId) {
                     if (p.data.list.player == "player1") {
                         console.log("player1 userDisconnect");
                         scoreTextP1.setText("");
+                        this.image1.destroy();
                     } else if (p.data.list.player == "player2") {
                         console.log("player2 disconnect");
                         scoreTextP2.setText("");
+                        this.image2.destroy();
                     } else if (p.data.list.player == "player3") {
                         // console.log("player3 disconnect");
                         scoreTextP3.setText("");
+                        this.image3.destroy();
                     } else if (p.data.list.player == "player4") {
                         scoreTextP4.setText("");
+                        this.image4.destroy();
                     }
                     p.destroy();
                 }
@@ -730,37 +794,37 @@
             });
         } //CLOSE KICK FUNCTION
 
-        setTimeout(function() {
-            if (
-                typeof player1 != "undefined" &&
-                self.socket.id == player1.data.list.socketId
-            ) {
-                jumpListener(player1);
-                punchListener(player1);
-                kickListener(player1);
-            } else if (
-                typeof player2 != "undefined" &&
-                self.socket.id == player2.data.list.socketId
-            ) {
-                jumpListener(player2);
-                punchListener(player2);
-                kickListener(player2);
-            } else if (
-                typeof player3 != "undefined" &&
-                self.socket.id == player3.data.list.socketId
-            ) {
-                jumpListener(player3);
-                punchListener(player3);
-                kickListener(player3);
-            } else if (
-                typeof player4 != "undefined" &&
-                self.socket.id == player4.data.list.socketId
-            ) {
-                jumpListener(player4);
-                punchListener(player4);
-                kickListener(player4);
-            }
-        }, 100);
+        // setTimeout(function() {
+        //     if (
+        //         typeof player1 != "undefined" &&
+        //         self.socket.id == player1.data.list.socketId
+        //     ) {
+        //         jumpListener(player1);
+        //         punchListener(player1);
+        //         kickListener(player1);
+        //     } else if (
+        //         typeof player2 != "undefined" &&
+        //         self.socket.id == player2.data.list.socketId
+        //     ) {
+        //         jumpListener(player2);
+        //         punchListener(player2);
+        //         kickListener(player2);
+        //     } else if (
+        //         typeof player3 != "undefined" &&
+        //         self.socket.id == player3.data.list.socketId
+        //     ) {
+        //         jumpListener(player3);
+        //         punchListener(player3);
+        //         kickListener(player3);
+        //     } else if (
+        //         typeof player4 != "undefined" &&
+        //         self.socket.id == player4.data.list.socketId
+        //     ) {
+        //         jumpListener(player4);
+        //         punchListener(player4);
+        //         kickListener(player4);
+        //     }
+        // }, 80);
     } //CLOSES CREATE FUNCTION
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -793,9 +857,17 @@
             Phaser.Input.Keyboard.KeyCodes.D
         );
 
+        if (self.key_A.isDown || self.key_D.isDown) {
+            downFlag = true;
+        } else {
+            if (downFlag == true) {
+                downFlag = false;
+                game.sound.play("actionSound");
+            }
+        }
+
         this.socket.off("playerDied").on("playerDied", function(deadPlayer) {
             //fuq
-            console.log("DEADPLAYER", deadPlayer);
             if (deadPlayer.data.player == "player1") {
                 player1.setData({ lives: deadPlayer.data.lives, hp: 999 });
                 scoreTextP1.setText("P1: " + deadPlayer.data.lives);
@@ -824,6 +896,7 @@
                     });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //state on own player
+                    // makeSound(self);
                     if (checkIfInRange().length > 0) {
                         doDmgLeft(checkIfInRange(), self); //state on enemy player
                     }
@@ -909,6 +982,7 @@
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //state on own player
+                    // makeSound(self);
                     if (checkIfInRange().length > 0) {
                         doDmgLeft(checkIfInRange(), self); //state on enemy player
                     }
@@ -917,6 +991,7 @@
                     player.setData({ actionRight: false, actionLeft: true });
                     player.anims.play("leftPunch", true);
                     player.setData(leftPunchObj); //state on own player
+                    // makeSound(self);
                     if (checkIfInRange().length > 0) {
                         doDmgLeft(checkIfInRange(), self); //state on enemy player
                     }
@@ -1658,6 +1733,12 @@
                         allPlayers: players.getChildren()
                     });
                     if (lives == 0) {
+                        image1dead = self.add
+                            .image(70, 325, "p1dead")
+                            .setScale(0.9);
+                        self.socket.emit("gameOver", {
+                            player: player1.data.list.player
+                        });
                         player1.destroy();
                     }
                 }
@@ -1672,6 +1753,12 @@
                         allPlayers: players.getChildren()
                     });
                     if (lives == 0) {
+                        image2dead = self.add
+                            .image(210, 325, "p2dead")
+                            .setScale(0.9);
+                        self.socket.emit("gameOver", {
+                            player: player2.data.list.player
+                        });
                         player2.destroy();
                     }
                 }
@@ -1686,6 +1773,12 @@
                         allPlayers: players.getChildren()
                     });
                     if (lives == 0) {
+                        image3dead = self.add
+                            .image(340, 325, "p3dead")
+                            .setScale(0.9);
+                        self.socket.emit("gameOver", {
+                            player: player3.data.list.player
+                        });
                         player3.destroy();
                     }
                 }
@@ -1700,6 +1793,12 @@
                         allPlayers: players.getChildren()
                     });
                     if (lives == 0) {
+                        image4dead = self.add
+                            .image(480, 325, "p4dead")
+                            .setScale(0.9);
+                        self.socket.emit("gameOver", {
+                            player: player4.data.list.player
+                        });
                         player4.destroy();
                     }
                 }
@@ -1766,6 +1865,7 @@
     //ADD PLAYERS
     function addPlayers(self, playerInfo) {
         var curPlayer = "player" + playerInfo.playerNo;
+        mainPlayerNo = curPlayer;
         window[curPlayer] = players
             .create(
                 playerInfo.x,
@@ -1799,58 +1899,52 @@
             });
         window[curPlayer].body.setGravityY(300);
 
-        // players.getChildren().forEach(function(p) {
-        //     if (p.data.list.player != curPlayer) {
-        //         self.physics.add.overlap(
-        //             window[curPlayer],
-        //             p,
-        //             function() {
-        //                 // console.log("overlapping with player:", p);
-        //             },
-        //             null,
-        //             self
-        //         );
-        //     }
-        // });
-
         if (curPlayer == "player1") {
+            image1 = self.add.image(70, 325, "p1").setScale(0.9);
             scoreTextP1 = self.add.text(
-                40,
-                16,
+                95,
+                318,
                 "P1: " + player1.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#b12f25",
+                    strokeThickness: "5"
                 }
             );
         } else if (curPlayer == "player2") {
+            image2 = self.add.image(210, 325, "p2").setScale(0.9);
             scoreTextP2 = self.add.text(
-                200,
-                16,
+                230,
+                318,
                 "P2: " + player2.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#d67d29",
+                    strokeThickness: "5"
                 }
             );
         } else if (curPlayer == "player3") {
+            image3 = self.add.image(340, 325, "p3").setScale(0.9);
             scoreTextP3 = self.add.text(
-                360,
-                16,
+                370,
+                318,
                 "P3: " + player3.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#2931d6",
+                    strokeThickness: "5"
                 }
             );
         } else if (curPlayer == "player4") {
+            image4 = self.add.image(480, 325, "p4").setScale(0.9);
             scoreTextP4 = self.add.text(
-                520,
-                16,
+                500,
+                318,
                 "P4: " + player4.data.list.lives,
                 {
-                    fontSize: "22px",
-                    fill: "#000"
+                    fontSize: "23px",
+                    fill: "#347628",
+                    strokeThickness: "5"
                 }
             );
         }
@@ -1930,4 +2024,12 @@
             self.socket.emit("playerDamaged", { enemyData });
         });
     }
+    function setFriction(player, platform) {
+        if (platform.key === "ice-platform") {
+            player.body.x -= platform.body.x - platform.body.prev.x;
+        }
+    }
+    // function makeSound(self) {
+    //     self.socket.emit("sound", "anysound");
+    // }
 })(); // CLOSE IIFE
