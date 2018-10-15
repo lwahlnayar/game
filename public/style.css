@@ -1,0 +1,44 @@
+* {
+    box-sizing: none;
+    background: azure;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+p {
+    margin: 1px;
+}
+
+canvas {
+    position: relative;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    border: 1px solid blue;
+    width: 100%;
+}
+
+.topWrapper,
+.bottomWrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.instructions {
+    width: 640px;
+}
+
+.controls {
+    width: 640px;
+    position: absolute;
+    transform: translateY(410px);
+}
+
+.controls h2 {
+    margin-bottom: 10px;
+}
